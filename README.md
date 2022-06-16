@@ -1,6 +1,5 @@
 ### INFO 
-Sc nya sampe sini aja dah kyk nya, gw pen pindah ke Typescript 😅
-
+Sc nya masih jalan bg, ga sengaja ku priv kemarin 😅
 
 Original : [`DikaArdnt/Hisoka-Morou`](https://github.com/DikaArdnt/Hisoka-Morou)
 
@@ -23,8 +22,8 @@ This is Script of WhatsApp multi device, working with [`@adiwajshing/baileys`](h
 * Unduh & Instal FFmpeg [`Klik Disini`](https://ffmpeg.org/download.html) (**Jangan Lupa Tambahkan FFmpeg ke variabel lingkungan PATH**)
 
 ```bash
-git clone https://github.com/SkylarKaf/Elaina-MD
-cd Elaina-MD
+git clone https://github.com/SkylarKaf/Elaina-md
+cd Elaina-md
 npm install
 ```
 </details>
@@ -45,7 +44,7 @@ apt update && apt upgrade
 apt install git -y
 apt install nodejs -y
 apt install ffmpeg -y
-git clone https://github.com/SkylarKaf/Elaina-MD
+git clone https://github.com/SkylarKaf/Elaina-md
 cd Elaina-MD
 npm install
 ```
@@ -61,7 +60,6 @@ WhatsApp bot is still in the development stage, so there are a few bugs
 WhatsApp Connection (BETA, not working perfectly)
 
 Editing Number Owner & session name in [`config.js`](https://github.com/SkylarKaf/Elaina-MD/blob/master/config.js)
-Get Apikey zenz on [`zenz`](https://zenzapi.xyz/pricing)
 
 ## Thanks To
 * [`@adiwajshing/baileys`](https://github.com/adiwajshing/baileys)
