@@ -15,6 +15,7 @@ const { exec, spawn, execSync } = require("child_process")
 const axios = require('axios')
 const path = require('path')
 const os = require('os')
+const Jimp = require('jimp')
 const hx = require('hxz-api')
 const xa = require('xfarr-api')
 const moment = require('moment-timezone')
@@ -209,9 +210,16 @@ module.exports = elaina = async (elaina, m, chatUpdate, store) => {
         if (m.message) {
             elaina.sendReadReceipt(m.chat, m.sender, [m.key.id])
             console.log(chalk.black(chalk.bgYellow('[ MSG ]')), chalk.black(chalk.bgWhite(budy || m.mtype)) + '\n' + chalk.blue('>'), chalk.green(m.isGroup ? pushname : 'Private', m.chat))
-        }
-	
-	// reset limit every 12 hours
+        }        	
+        //Resize Location
+    	const reSize = async(buffer, ukur1, ukur2) => {
+        return new Promise(async(resolve, reject) => {
+        var obz = await Jimp.read(buffer);
+        var ab = await obz.resize(ukur1, ukur2).getBufferAsync(Jimp.MIME_JPEG)
+        resolve(ab)
+         })
+        }        	
+    	//Reset limit every 12 hours
         let cron = require('node-cron')
         cron.schedule('00 12 * * *', () => {
             let user = Object.keys(global.db.data.users)
@@ -223,6 +231,14 @@ module.exports = elaina = async (elaina, m, chatUpdate, store) => {
             timezone: "Asia/Jakarta"
         })
         
+        //Add Hit 
+      global.hit = {}
+       if (isCmd) {
+       data = await fetchJson('https://api.countapi.xyz/hit/FaxBot/visits')
+        jumlahcmd = `${data.value}`
+         dataa = await fetchJson(`https://api.countapi.xyz/hit/FaxBot${moment.tz('Asia/Jakarta').format('DDMMYYYY')}/visits`)
+          jumlahharian = `${dataa.value}`
+            }
 	// auto set bio
 	// ${runtime(process.uptime())}
 	if (db.data.settings[botNumber].autobio) {
@@ -237,14 +253,14 @@ module.exports = elaina = async (elaina, m, chatUpdate, store) => {
 	  // Anti Link
         if (db.data.chats[m.chat].antilink) {
         if (budy.match(`chat.whatsapp.com`)) {
-        replay(`「 ANTI LINK 」\n\nKamu terdeteksi mengirim link group, maaf kamu akan di kick !`)
-        if (!isBotAdmins) return replay(`Jadikan Bot Sebagai Admin Terlebih Dahulu`)
+        reply(`「 ANTI LINK 」\n\nKamu terdeteksi mengirim link group, maaf kamu akan di kick !`)
+        if (!isBotAdmins) return reply(`Jadikan Bot Sebagai Admin Terlebih Dahulu`)
         let gclink = (`https://chat.whatsapp.com/`+await elaina.groupInviteCode(m.chat))
         let isLinkThisGc = new RegExp(gclink, 'i')
         let isgclink = isLinkThisGc.test(m.text)
-        if (isgclink) return replay(`「 ANTI LINK 」\n\nSystem Mendeteksi Kamu Mengirim Link Grub Ini,\n*• Pembatalan Kick Succes ✓*`)
-        if (isAdmins) return replay(`「 ANTI LINK 」\n\nSystem Mendeteksi Kamu Adalah Admin Grub,\n*• Pembatalan Kick Succes ✓*`)
-        if (isCreator) return replay(`「 ANTI LINK 」\n\nSystem Mendeteksi Kamu Adalah Owner Bot,\n*• Pembatalan Kick Succes ✓*`)
+        if (isgclink) return reply(`「 ANTI LINK 」\n\nSystem Mendeteksi Kamu Mengirim Link Grub Ini,\n*• Pembatalan Kick Succes ✓*`)
+        if (isAdmins) return reply(`「 ANTI LINK 」\n\nSystem Mendeteksi Kamu Adalah Admin Grub,\n*• Pembatalan Kick Succes ✓*`)
+        if (isCreator) return reply(`「 ANTI LINK 」\n\nSystem Mendeteksi Kamu Adalah Owner Bot,\n*• Pembatalan Kick Succes ✓*`)
         elaina.groupParticipantsUpdate(m.chat, [m.sender], 'remove')
         }
         }
@@ -254,16 +270,10 @@ module.exports = elaina = async (elaina, m, chatUpdate, store) => {
       return
       }
 
-     // Target
-        const replySc = (teks) => {
-            elaina.sendMessage(m.chat, { text: teks, contextInfo:{"externalAdReply": {"title": `${global.botnma}`,"body": `Copas? Kasih Credit jan lupa`, "previewType": "PHOTO","thumbnailUrl": ``,"thumbnail": fs.readFileSync(`./Media/github.jpg`),"sourceUrl": "https://github.com/SkylarKaf"}}}, { quoted: m})
-        }       
-        const replay = (teks) => {
-            elaina.sendMessage(m.chat, { text: teks, contextInfo:{"externalAdReply": {"title": `${global.botnma}`,"body": `${time}`, "previewType": "PHOTO","thumbnailUrl": ``,"thumbnail": fs.readFileSync(`./Media/reply.jpg`),"sourceUrl": "https://skylarkaf.github.io/"}}}, { quoted: m})
-        }
+     // Target       
         const reply = (teks) => {
-            elaina.sendMessage(m.chat, { text: teks, contextInfo:{"externalAdReply": {"title": `${global.botnma}`,"body": `${time}`, "previewType": "PHOTO","thumbnailUrl": ``,"thumbnail": fs.readFileSync(`./Media/reply.jpg`),"sourceUrl": "https://skylarkaf.github.io/"}}}, { quoted: m})
-        }
+            return elaina.sendMessage(m.chat, { text: teks, contextInfo:{"externalAdReply": {"title": `© ${global.botnma}`,"body": `${time}`, "previewType": "PHOTO","thumbnailUrl": ``,"thumbnail": fs.readFileSync(`./Media/reply.jpg`), "sourceUrl": "https://skylarkaf.github.io"}}}, { quoted: m })
+        }       	 
                 
         // Respon Cmd with media
         if (isMedia && m.msg.fileSha256 && (m.msg.fileSha256.toString('base64') in global.db.data.sticker)) {
@@ -313,16 +323,16 @@ ${Array.from(room.jawaban, (jawaban, index) => {
             if (budy.toLowerCase() == jawaban) {
                 await elaina.sendButtonText(m.chat, [{ buttonId: 'tebak lagu', buttonText: { displayText: 'Tebak Lagu' }, type: 1 }], `🎮 Tebak Lagu 🎮\n\nJawaban Benar 🎉\n\nIngin bermain lagi? tekan button dibawah`, elaina.user.name, m)
                 delete tebaklagu[m.sender.split('@')[0]]
-            } else replay('*Jawaban Salah!*')
+            } else reply('*Jawaban Salah!*')
         }
 
         if (kuismath.hasOwnProperty(m.sender.split('@')[0]) && isCmd) {
             kuis = true
             jawaban = kuismath[m.sender.split('@')[0]]
             if (budy.toLowerCase() == jawaban) {
-                await replay(`🎮 Kuis Matematika  🎮\n\nJawaban Benar 🎉\n\nIngin bermain lagi? kirim ${prefix}math mode`)
+                await reply(`🎮 Kuis Matematika  🎮\n\nJawaban Benar 🎉\n\nIngin bermain lagi? kirim ${prefix}math mode`)
                 delete kuismath[m.sender.split('@')[0]]
-            } else replay('*Jawaban Salah!*')
+            } else reply('*Jawaban Salah!*')
         }
 
         if (tebakgambar.hasOwnProperty(m.sender.split('@')[0]) && isCmd) {
@@ -331,7 +341,7 @@ ${Array.from(room.jawaban, (jawaban, index) => {
             if (budy.toLowerCase() == jawaban) {
                 await elaina.sendButtonText(m.chat, [{ buttonId: 'tebak gambar', buttonText: { displayText: 'Tebak Gambar' }, type: 1 }], `🎮 Tebak Gambar 🎮\n\nJawaban Benar 🎉\n\nIngin bermain lagi? tekan button dibawah`, elaina.user.name, m)
                 delete tebakgambar[m.sender.split('@')[0]]
-            } else replay('*Jawaban Salah!*')
+            } else reply('*Jawaban Salah!*')
         }
 
         if (tebakkata.hasOwnProperty(m.sender.split('@')[0]) && isCmd) {
@@ -340,7 +350,7 @@ ${Array.from(room.jawaban, (jawaban, index) => {
             if (budy.toLowerCase() == jawaban) {
                 await elaina.sendButtonText(m.chat, [{ buttonId: 'tebak kata', buttonText: { displayText: 'Tebak Kata' }, type: 1 }], `🎮 Tebak Kata 🎮\n\nJawaban Benar 🎉\n\nIngin bermain lagi? tekan button dibawah`, elaina.user.name, m)
                 delete tebakkata[m.sender.split('@')[0]]
-            } else replay('*Jawaban Salah!*')
+            } else reply('*Jawaban Salah!*')
         }
 
         if (caklontong.hasOwnProperty(m.sender.split('@')[0]) && isCmd) {
@@ -351,7 +361,7 @@ ${Array.from(room.jawaban, (jawaban, index) => {
                 await elaina.sendButtonText(m.chat, [{ buttonId: 'tebak lontong', buttonText: { displayText: 'Tebak Lontong' }, type: 1 }], `🎮 Cak Lontong 🎮\n\nJawaban Benar 🎉\n*${deskripsi}*\n\nIngin bermain lagi? tekan button dibawah`, elaina.user.name, m)
                 delete caklontong[m.sender.split('@')[0]]
 		delete caklontong_desk[m.sender.split('@')[0]]
-            } else replay('*Jawaban Salah!*')
+            } else reply('*Jawaban Salah!*')
         }
 
         if (tebakkalimat.hasOwnProperty(m.sender.split('@')[0]) && isCmd) {
@@ -369,7 +379,7 @@ ${Array.from(room.jawaban, (jawaban, index) => {
             if (budy.toLowerCase() == jawaban) {
                 await elaina.sendButtonText(m.chat, [{ buttonId: 'tebak lirik', buttonText: { displayText: 'Tebak Lirik' }, type: 1 }], `🎮 Tebak Lirik 🎮\n\nJawaban Benar 🎉\n\nIngin bermain lagi? tekan button dibawah`, elaina.user.name, m)
                 delete tebaklirik[m.sender.split('@')[0]]
-            } else replay('*Jawaban Salah!*')
+            } else reply('*Jawaban Salah!*')
         }
 	    
 	if (tebaktebakan.hasOwnProperty(m.sender.split('@')[0]) && isCmd) {
@@ -378,7 +388,7 @@ ${Array.from(room.jawaban, (jawaban, index) => {
             if (budy.toLowerCase() == jawaban) {
                 await elaina.sendButtonText(m.chat, [{ buttonId: 'tebak tebakan', buttonText: { displayText: 'Tebak Tebakan' }, type: 1 }], `🎮 Tebak Tebakan 🎮\n\nJawaban Benar 🎉\n\nIngin bermain lagi? tekan button dibawah`, elaina.user.name, m)
                 delete tebaktebakan[m.sender.split('@')[0]]
-            } else replay('*Jawaban Salah!*')
+            } else reply('*Jawaban Salah!*')
         }
         
         //TicTacToe
@@ -396,7 +406,7 @@ ${Array.from(room.jawaban, (jawaban, index) => {
 	    if (!isSurrender) return !0
 	    }
 	    if (!isSurrender && 1 > (ok = room.game.turn(m.sender === room.game.playerO, parseInt(m.text) - 1))) {
-	    replay({
+	    reply({
 	    '-3': 'Game telah berakhir',
 	    '-2': 'Invalid',
 	    '-1': 'Posisi Invalid',
@@ -490,13 +500,13 @@ klik https://wa.me/${botNumber.split`@`[0]}`, m, { mentions: [roof.p, roof.p2] }
 	    if (jwb && reg.test(m.text) && !roof.pilih && !m.isGroup) {
 	    roof.pilih = reg.exec(m.text.toLowerCase())[0]
 	    roof.text = m.text
-	    replay(`Kamu telah memilih ${m.text} ${!roof.pilih2 ? `\n\nMenunggu lawan memilih` : ''}`)
+	    reply(`Kamu telah memilih ${m.text} ${!roof.pilih2 ? `\n\nMenunggu lawan memilih` : ''}`)
 	    if (!roof.pilih2) elaina.sendText(roof.p2, '_Lawan sudah memilih_\nSekarang giliran kamu', 0)
 	    }
 	    if (jwb2 && reg.test(m.text) && !roof.pilih2 && !m.isGroup) {
 	    roof.pilih2 = reg.exec(m.text.toLowerCase())[0]
 	    roof.text2 = m.text
-	    replay(`Kamu telah memilih ${m.text} ${!roof.pilih ? `\n\nMenunggu lawan memilih` : ''}`)
+	    reply(`Kamu telah memilih ${m.text} ${!roof.pilih ? `\n\nMenunggu lawan memilih` : ''}`)
 	    if (!roof.pilih) elaina.sendText(roof.p, '_Lawan sudah memilih_\nSekarang giliran kamu', 0)
 	    }
 	    let stage = roof.pilih
@@ -526,7 +536,7 @@ klik https://wa.me/${botNumber.split`@`[0]}`, m, { mentions: [roof.p, roof.p2] }
             let afkTime = user.afkTime
             if (!afkTime || afkTime < 0) continue
             let reason = user.afkReason || ''
-            replay(`
+            reply(`
 Jangan tag dia!
 Dia sedang AFK ${reason ? 'dengan alasan ' + reason : 'tanpa alasan'}
 Selama ${clockString(new Date - afkTime)}
@@ -535,14 +545,15 @@ Selama ${clockString(new Date - afkTime)}
 
         if (db.data.users[m.sender].afkTime > -1) {
             let user = global.db.data.users[m.sender]
-            replay(`
+            reply(`
 Kamu berhenti AFK${user.afkReason ? ' setelah ' + user.afkReason : ''}
 Selama ${clockString(new Date - user.afkTime)}
 `.trim())
             user.afkTime = -1
             user.afkReason = ''
         }
-	    
+        
+			    
         switch(command) {
                               
 //═══════════[Start Case
@@ -550,16 +561,16 @@ Selama ${clockString(new Date - user.afkTime)}
 case 'enters': {
                 if (!text) throw 'Masukkan Link Group!'
                 if (!isUrl(args[0]) && !args[0].includes('whatsapp.com')) throw 'Link Invalid!'
-                replay(mess.wait)
+                reply(mess.wait)
                 let result = args[0].split('https://chat.whatsapp.com/')[1]
-                await elaina.groupAcceptInvite(result).then((res) => replay(jsonformat(res))).catch((err) => replay(jsonformat(err)))
+                await elaina.groupAcceptInvite(result).then((res) => reply(jsonformat(res))).catch((err) => reply(jsonformat(err)))
             }
      break       
      	  case 'afk': {
                 let user = global.db.data.users[m.sender]
                 user.afkTime = + new Date
                 user.afkReason = text
-                replay(`${m.pushName} Telah Afk${text ? ': ' + text : ''}`)
+                reply(`${m.pushName} Telah Afk${text ? ': ' + text : ''}`)
             }
             break	       
             case 'chat': {
@@ -611,30 +622,24 @@ Internet speed 1gbs, Hight server Ram Fast Respon dan 24jam aktifikasi!
 
 Tertarik untuk sewa? Chat Saja owner kami`
 
-message = await prepareWAMessageMedia({ image: await getBuffer(`https://uploader.caliph.my.id/file/XIeblLsuT4.jpg`)}, { upload:   elaina.waUploadToServer })
-              template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
-                  templateMessage: {
-                      hydratedTemplate: {
-                        imageMessage: message.imageMessage,
-                          hydratedContentText: argumen,
-                            hydratedFooterText: `Harap Baca S&K Bot Sebelum Menyewa!`,
-                             hydratedButtons: [{                                
-                                quickReplyButton: {
-                                    displayText: 'S&K',
-                                    id: `${prefix}syarat`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                            }]
+let gambar = await getBuffer(`https://uploader.caliph.my.id/file/XIeblLsuT4.jpg`)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+     templateMessage: {
+         hydratedTemplate: {
+           hydratedContentText: argumen,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
+           hydratedFooterText: `Harap Baca S&K Bot Sebelum Menyewa!`,
+           hydratedButtons: [
+                  { quickReplyButton: { displayText: 'S&K', id: `${prefix}syarat` } }, 
+                  { quickReplyButton: { displayText: 'OWNER', id: `${prefix}owner` } }
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-break
+                }
+          break   
    case 'syarat': case 'ketentuanbot': case 's&k': case 'S&K': case 'rules':{
  anu = `*• S&K Umum*
 
@@ -653,15 +658,16 @@ break
 
 • Bot ini masih dalam pengembangan, wajar jika banyak bug/error Harap maklumi 🙏
   ~ skylarkaf`
-   replay(anu)
+   reply(anu)
       }
    break
    case 'owner': case 'creator': {
-                elaina.sendContact(m.chat, global.owner, m)
+           const fkontak = { key: { fromMe: false, participant: `0@s.whatsapp.net`, ...(m.chat ? { remoteJid: "status@broadcast" } : {})}, message: { "contactMessage":{"displayName": ` @skylarkaf_`,"vcard":`BEGIN:VCARD\nVERSION:3.0\nN:2;conn;;;\nFN:SkylarKaf\nitem1.TEL;waid=6282331660134:6282331660134\nitem1.X-ABLabel:Mobile\nEND:VCARD` }}}                          		
+                elaina.sendContact(m.chat, global.owner, fkontak)
             }
             break
    case 'sc': case 'script': case 'sourcecode':{
-            replySc('*• Script Base Original:*\nhttps://github.com/DikaArdnt/Hisoka-Morou\n\n*• Edited Script:*\nhttps://github.com/SkylarKaf/Elaina-MD\n\nDont Forget Give Star :)')
+            reply('*• Script Base Original:*\nhttps://github.com/DikaArdnt/Hisoka-Morou\n\n*• Edited Script:*\nhttps://github.com/SkylarKaf/Elaina-MD\n\nDont Forget Give Star :)')
             }
             break
    case 'donate': case 'donasi':{
@@ -746,8 +752,8 @@ ${cpus.map((cpu, i) => `${i + 1}. ${cpu.model.trim()} (${cpu.speed} MHZ)\n${Obje
           o = e
          } finally {
         let { stdout, stderr } = o
-        if (stdout.trim()) replay(stdout)
-        if (stderr.trim()) replay(stderr)
+        if (stdout.trim()) reply(stdout)
+        if (stderr.trim()) reply(stderr)
             }
             }
             break
@@ -1068,25 +1074,25 @@ elaina.sendMessage(from, 'Pertanyaan : *'+apakah+'*\n\nJawaban : '+ kah, text, {
 break*/
 
 case 'apakah':
-	if (!text) return replay(`Use Text, Example : ${prefix + command} he married `)
+	if (!text) return reply(`Use Text, Example : ${prefix + command} he married `)
 	const lel = [`Gk tau`,`Iya`,`Coba ulangi`,`YNTKTS`,`BisA jadi`]
 	const kahk = lel[Math.floor(Math.random() * lel.length)]
     elaina.sendMessage(from, { text: `Pertanyaan : ${q}\nJawaban : ${kahk}` }, { quoted: m })
 	break
 case 'bisakah':
-	if (!text) return replay(`Use Text, Example : ${prefix + command} you fuck her lol `)
+	if (!text) return reply(`Use Text, Example : ${prefix + command} you fuck her lol `)
 	const bisa = [`Bisa`,`Tidak`,`Gak!`,`Manuk akal`,`Kurang akal`,`Mimpi Dek`]
 	const ga = bisa[Math.floor(Math.random() * bisa.length)]
     elaina.sendMessage(from, { text: `Pertanyaan : ${q}\nJawaban : ${ga}` }, { quoted: m })
 	break
 case 'kapankah':
-    if (!text) return replay(`Use Text, Example : ${prefix + command} will i get married `)
+    if (!text) return reply(`Use Text, Example : ${prefix + command} will i get married `)
 	const kapan =['Besok','Lusa','4 Hari Lagi','5 Hari Lagi','6 Hari Lagi','1 Minggu Lagi','2 Minggu Lagi','3 Minggu Lagi','1 Bulan Lagi','2 Bulan Lagi','3 Bulan Lagi','4 Bulan Lagi','5 Bulan Lagi','6 Bulan Lagi','1 Tahun Lagi','2 Tahun Lagi','3 Tahun Lagi','4 Tahun Lagi','5 Tahun Lagi','6 Tahun Lagi','1 Abad lagi','3 Hari Lagi','Tidak Akan Pernah']
     const kapankah = kapan[Math.floor(Math.random() * kapan.length)]
     elaina.sendMessage(from, { text: `Pertanyaan : ${q}\nJawaban : ${kapankah}` }, { quoted: m })
 	break					
 case 'rate':{
-	   if (!text) return replay(`Contoh: ${prefix + command} gay`)
+	   if (!text) return reply(`Contoh: ${prefix + command} gay`)
        const ra = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56','57','58','59','60','61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76','77','78','79','80','81','82','83','84','85','86','87','88','89','90','91','92','93','94','95','96','97','98','99','100']
 	   const te = ra[Math.floor(Math.random() * ra.length)]
        elaina.sendMessage(from, { text: `Rate : ${q}\nJawaban : *${te}%*` }, { quoted: m })
@@ -1095,7 +1101,7 @@ case 'rate':{
 
 case 'family100': {
                 if ('family100'+m.chat in _family100) {
-                    replay('Masih Ada Sesi Yang Belum Diselesaikan!')
+                    reply('Masih Ada Sesi Yang Belum Diselesaikan!')
                     throw false
                 }
                 let anu = await fetchJson('https://raw.githubusercontent.com/BochilTeam/database/master/games/family100.json')
@@ -1207,7 +1213,7 @@ case 'tebak': {
                 await sleep(result.waktu)
                 if (kuismath.hasOwnProperty(m.sender.split('@')[0])) {
                     console.log("Jawaban: " + result.jawaban)
-                    replay("Waktu Habis\nJawaban: " + kuismath[m.sender.split('@')[0]])
+                    reply("Waktu Habis\nJawaban: " + kuismath[m.sender.split('@')[0]])
                     delete kuismath[m.sender.split('@')[0]]
                 }
             }
@@ -1219,7 +1225,7 @@ case 'ttc': case 'ttt': case 'tictactoe': {
             if (Object.values(this.game).find(room => room.id.startsWith('tictactoe') && [room.game.playerX, room.game.playerO].includes(m.sender))) throw 'Kamu masih didalam game'
             let room = Object.values(this.game).find(room => room.state === 'WAITING' && (text ? room.name === text : true))
             if (room) {
-            replay('Partner ditemukan!')
+            reply('Partner ditemukan!')
             room.o = m.chat
             room.game.playerO = m.sender
             room.state = 'PLAYING'
@@ -1258,7 +1264,7 @@ Ketik *nyerah* untuk menyerah dan mengakui kekalahan`
             state: 'WAITING'
             }
             if (text) room.name = text
-            replay('Menunggu partner' + (text ? ` mengetik command dibawah ini ${prefix}${command} ${text}` : ''))
+            reply('Menunggu partner' + (text ? ` mengetik command dibawah ini ${prefix}${command} ${text}` : ''))
             this.game[room.id] = room
             }
             }
@@ -1270,7 +1276,7 @@ Ketik *nyerah* untuk menyerah dan mengakui kekalahan`
             delete this.game
             elaina.sendText(m.chat, `Berhasil delete session TicTacToe`, m)
             } else if (!this.game) {
-            replay(`Session TicTacToe🎮 tidak ada`)
+            reply(`Session TicTacToe🎮 tidak ada`)
             } else throw '?'
             } catch (e) {
             m.reply('rusak')
@@ -1282,9 +1288,9 @@ Ketik *nyerah* untuk menyerah dan mengakui kekalahan`
             let poin = 10
             let poin_lose = 10
             let timeout = 60000
-            if (Object.values(this.suit).find(roof => roof.id.startsWith('suit') && [roof.p, roof.p2].includes(m.sender))) replay(`Selesaikan suit mu yang sebelumnya`)
-	    if (m.mentionedJid[0] === m.sender) return replay(`Tidak bisa bermain dengan diri sendiri !`)
-            if (!m.mentionedJid[0]) return replay(`_Siapa yang ingin kamu tantang?_\nTag orangnya..\n\nContoh : ${prefix}suit @${owner[1]}`, m.chat, { mentions: [owner[1] + '@s.whatsapp.net'] })
+            if (Object.values(this.suit).find(roof => roof.id.startsWith('suit') && [roof.p, roof.p2].includes(m.sender))) reply(`Selesaikan suit mu yang sebelumnya`)
+	    if (m.mentionedJid[0] === m.sender) return reply(`Tidak bisa bermain dengan diri sendiri !`)
+            if (!m.mentionedJid[0]) return reply(`_Siapa yang ingin kamu tantang?_\nTag orangnya..\n\nContoh : ${prefix}suit @${owner[1]}`, m.chat, { mentions: [owner[1] + '@s.whatsapp.net'] })
             if (Object.values(this.suit).find(roof => roof.id.startsWith('suit') && [roof.p, roof.p2].includes(m.mentionedJid[0]))) throw `Orang yang kamu tantang sedang bermain suit bersama orang lain :(`
             let id = 'suit_' + new Date() * 1
             let caption = `_*SUIT PvP*_
@@ -1339,7 +1345,7 @@ case 'kick': {
                 if (!isBotAdmins) throw mess.botAdmin
                 if (!isAdmins) throw mess.admin
 		let users = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, '')+'@s.whatsapp.net'
-		await elaina.groupParticipantsUpdate(m.chat, [users], 'promote').then((res) => replay(jsonformat(res))).catch((err) => m.reply(jsonformat(err)))
+		await elaina.groupParticipantsUpdate(m.chat, [users], 'promote').then((res) => reply(jsonformat(res))).catch((err) => m.reply(jsonformat(err)))
 	}
 	break
 	case 'demote': {
@@ -1347,7 +1353,7 @@ case 'kick': {
                 if (!isBotAdmins) throw mess.botAdmin
                 if (!isAdmins) throw mess.admin
 		let users = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : text.replace(/[^0-9]/g, '')+'@s.whatsapp.net'
-		await elaina.groupParticipantsUpdate(m.chat, [users], 'demote').then((res) => replay(jsonformat(res))).catch((err) => m.reply(jsonformat(err)))
+		await elaina.groupParticipantsUpdate(m.chat, [users], 'demote').then((res) => reply(jsonformat(res))).catch((err) => m.reply(jsonformat(err)))
 	}
 	break
   case 'setname': case 'setsubject': {
@@ -1355,7 +1361,7 @@ case 'kick': {
                 if (!isBotAdmins) throw mess.botAdmin
                 if (!isAdmins) throw mess.admin
                 if (!text) throw 'Text ?'
-                await elaina.groupUpdateSubject(m.chat, text).then((res) => replay(mess.success)).catch((err) => m.reply(jsonformat(err)))
+                await elaina.groupUpdateSubject(m.chat, text).then((res) => reply(mess.success)).catch((err) => m.reply(jsonformat(err)))
             }
             break
           case 'setdesc': case 'setdesk': {
@@ -1363,7 +1369,7 @@ case 'kick': {
                 if (!isBotAdmins) throw mess.botAdmin
                 if (!isAdmins) throw mess.admin
                 if (!text) throw 'Text ?'
-                await elaina.groupUpdateDescription(m.chat, text).then((res) => replay(mess.success)).catch((err) => m.reply(jsonformat(err)))
+                await elaina.groupUpdateDescription(m.chat, text).then((res) => reply(mess.success)).catch((err) => m.reply(jsonformat(err)))
             }
             break
 case 'setppgroup': case 'setppgrup': case 'setppgc': {
@@ -1401,7 +1407,7 @@ let teks = ` *[ TAG ALL]*
             if (!m.isGroup) throw mess.group
             if (m.chat in vote) throw `_Masih ada vote di chat ini!_\n\n*${prefix}hapusvote* - untuk menghapus vote`
             if (!text) throw `Masukkan Alasan Melakukan Vote, Contoh: *${prefix + command} Owner Ganteng*`
-            replay(`Vote dimulai!\n\n*${prefix}upvote* - untuk ya\n*${prefix}devote* - untuk tidak\n*${prefix}cekvote* - untuk mengecek vote\n*${prefix}hapusvote* - untuk menghapus vote`)
+            reply(`Vote dimulai!\n\n*${prefix}upvote* - untuk ya\n*${prefix}devote* - untuk tidak\n*${prefix}cekvote* - untuk mengecek vote\n*${prefix}hapusvote* - untuk menghapus vote`)
             vote[m.chat] = [q, [], []]
             await sleep(1000)
             upvote = vote[m.chat][1]
@@ -1556,7 +1562,7 @@ break
             if (!m.isGroup) throw mess.group
             if (!(m.chat in vote)) throw `_*tidak ada voting digrup ini!*_\n\n*${prefix}vote* - untuk memulai vote`
             delete vote[m.chat]
-            replay('Berhasil Menghapus Sesi Vote Di Grup Ini')
+            reply('Berhasil Menghapus Sesi Vote Di Grup Ini')
 	    }
             break
                case 'group': case 'grup': {
@@ -1564,9 +1570,9 @@ break
                 if (!isBotAdmins) throw mess.botAdmin
                 if (!isAdmins) throw mess.admin
                 if (args[0] === 'close'){
-                    await elaina.groupSettingUpdate(m.chat, 'announcement').then((res) => replay(`Sukses Menutup Group`)).catch((err) => m.reply(jsonformat(err)))
+                    await elaina.groupSettingUpdate(m.chat, 'announcement').then((res) => reply(`Sukses Menutup Group`)).catch((err) => m.reply(jsonformat(err)))
                 } else if (args[0] === 'open'){
-                    await elaina.groupSettingUpdate(m.chat, 'not_announcement').then((res) => replay(`Sukses Membuka Group`)).catch((err) => m.reply(jsonformat(err)))
+                    await elaina.groupSettingUpdate(m.chat, 'not_announcement').then((res) => reply(`Sukses Membuka Group`)).catch((err) => m.reply(jsonformat(err)))
                 } else {
                 let buttons = [
                         { buttonId: 'group open', buttonText: { displayText: 'Open' }, type: 1 },
@@ -1582,9 +1588,9 @@ break
                 if (!isBotAdmins) throw mess.botAdmin
                 if (!isAdmins) throw mess.admin
              if (args[0] === 'open'){
-                await elaina.groupSettingUpdate(m.chat, 'unlocked').then((res) => replay(`Sukses Membuka Edit Info Group`)).catch((err) => m.reply(jsonformat(err)))
+                await elaina.groupSettingUpdate(m.chat, 'unlocked').then((res) => reply(`Sukses Membuka Edit Info Group`)).catch((err) => m.reply(jsonformat(err)))
              } else if (args[0] === 'close'){
-                await elaina.groupSettingUpdate(m.chat, 'locked').then((res) => replay(`Sukses Menutup Edit Info Group`)).catch((err) => m.reply(jsonformat(err)))
+                await elaina.groupSettingUpdate(m.chat, 'locked').then((res) => reply(`Sukses Menutup Edit Info Group`)).catch((err) => m.reply(jsonformat(err)))
              } else {
              let buttons = [
                         { buttonId: 'editinfo open', buttonText: { displayText: 'Open' }, type: 1 },
@@ -1600,13 +1606,13 @@ break
                 if (!isBotAdmins) throw mess.botAdmin
                 if (!isAdmins) throw mess.admin
                 if (args[0] === "on") {
-                if (db.data.chats[m.chat].antilink) return replay(`Sudah Aktif Sebelumnya`)
+                if (db.data.chats[m.chat].antilink) return reply(`Sudah Aktif Sebelumnya`)
                 db.data.chats[m.chat].antilink = true
-                replay(`Antilink Aktif !`)
+                reply(`Antilink Aktif !`)
                 } else if (args[0] === "off") {
-                if (!db.data.chats[m.chat].antilink) return replay(`Sudah Tidak Aktif Sebelumnya`)
+                if (!db.data.chats[m.chat].antilink) return reply(`Sudah Tidak Aktif Sebelumnya`)
                 db.data.chats[m.chat].antilink = false
-                replay(`Antilink Tidak Aktif !`)
+                reply(`Antilink Tidak Aktif !`)
                 } else {
                  let buttons = [
                         { buttonId: 'antilink on', buttonText: { displayText: 'On' }, type: 1 },
@@ -1678,7 +1684,7 @@ case 'react': {
                if (!text) throw `Contoh : ${prefix + command} packname|author`
           global.packname = text.split("|")[0]
           global.author = text.split("|")[1]
-          replay(`Exif berhasil diubah menjadi\n\n⭔ Packname : ${global.packname}\n⭔ Author : ${global.author}`)
+          reply(`Exif berhasil diubah menjadi\n\n⭔ Packname : ${global.packname}\n⭔ Author : ${global.author}`)
             }
             break         	
 case 'block': {
@@ -1700,11 +1706,11 @@ case 'block': {
                 if (/webp/.test(mime)) throw `Kirim/Reply Image Dengan Caption ${prefix + command}`
                 let media = await elaina.downloadAndSaveMediaMessage(quoted)
                 await elaina.updateProfilePicture(botNumber, { url: media }).catch((err) => fs.unlinkSync(media))
-                replay(mess.success)
+                reply(mess.success)
                 }
                 break
             case 'infochat': {
-                if (!m.quoted) replay('Reply Pesan')
+                if (!m.quoted) reply('Reply Pesan')
                 let msg = await m.getQuotedObj()
                 if (!m.quoted.isBaileys) throw 'Pesan tersebut bukan dikirim oleh bot!'
                 let teks = ''
@@ -1765,13 +1771,13 @@ case 'bcgc': case 'bcgroup': {
 
           case 'sticker': case 's': case 'stickergif': case 'sgif': case 'stiker':{
             if (!quoted) throw `Kirim Video/Image Dengan Caption ${prefix + command}`
-            replay(mess.wait)
+            reply(mess.wait)
                     if (/image/.test(mime)) {
                 let media = await quoted.download()
                 let encmedia = await elaina.sendImageAsSticker(m.chat, media, m, { packname: global.packname, author: global.author })
                 await fs.unlinkSync(encmedia)
             } else if (/video/.test(mime)) {
-                if ((quoted.msg || quoted).seconds > 11) return replay('Maksimal 10 detik!')
+                if ((quoted.msg || quoted).seconds > 11) return reply('Maksimal 10 detik!')
                 let media = await quoted.download()
                 let encmedia = await elaina.sendVideoAsSticker(m.chat, media, m, { packname: global.packname, author: global.author })
                 await fs.unlinkSync(encmedia)
@@ -1784,7 +1790,7 @@ case 'bcgc': case 'bcgroup': {
 	        let respond = `Kirim/reply image/sticker dengan caption ${prefix + command} text1|text2`
 	        if (!/image/.test(mime)) throw respond
             if (!text) throw respond
-	        replay(mess.wait)
+	        reply(mess.wait)
             atas = text.split('|')[0] ? text.split('|')[0] : '-'
             bawah = text.split('|')[1] ? text.split('|')[1] : '-'
 	        let dwnld = await quoted.download()
@@ -1822,7 +1828,7 @@ case 'bcgc': case 'bcgroup': {
 	    break
 	    case 'emojis': {
 	    if (!text) throw `Contoh : ${prefix + command} 😅`
-	    replay(mess.wait)
+	    reply(mess.wait)
 		let anu = await fetchJson(`https://tenor.googleapis.com/v2/featured?key=AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ&contentfilter=high&media_filter=png_transparent&component=proactive&collection=emoji_kitchen_v5&q=${encodeURIComponent(text)}`)
 		for (let res of anu.results) {
 		    let encmedia = await elaina.sendImageAsSticker(m.chat, res.url, m, { packname: global.packname, author: global.author, categories: res.tags })
@@ -1832,7 +1838,7 @@ case 'bcgc': case 'bcgroup': {
 	    break
 	       case 'attp': case 'ttp': {
            if (!text) throw `Contoh : ${prefix + command} text`
-           replay(mess.wait)
+           reply(mess.wait)
            await elaina.sendMedia(m.chat, `https://xteam.xyz/${command}?file&text=${text}`, 'elaina', 'morou', m, {asSticker: true})
 
          }
@@ -1840,7 +1846,7 @@ case 'bcgc': case 'bcgroup': {
          case 'toimage': case 'toimg': {
                if (!quoted) throw 'Reply Image'
                if (!/webp/.test(mime)) throw `Balas sticker dengan caption *${prefix + command}*`
-               replay(mess.wait)
+               reply(mess.wait)
                let media = await elaina.downloadAndSaveMediaMessage(quoted)
                let ran = await getRandom('.png')
                exec(`ffmpeg -i ${media} ${ran}`, (err) => {
@@ -1855,7 +1861,7 @@ case 'bcgc': case 'bcgroup': {
 	        case 'tomp4': case 'tovideo': {
             if (!quoted) throw 'Reply Media!'
             if (!/webp/.test(mime)) throw `balas stiker dengan caption *${prefix + command}*`
-            replay(mess.wait)
+            reply(mess.wait)
 		    let { webp2mp4File } = require('./lib/uploader')
             let media = await elaina.downloadAndSaveMediaMessage(quoted)
             let webpToMp4 = await webp2mp4File(media)
@@ -1867,7 +1873,7 @@ case 'bcgc': case 'bcgroup': {
             if (/document/.test(mime)) throw `Kirim/Reply Video/Audio Yang Ingin Dijadikan MP3 Dengan Caption ${prefix + command}`
             if (!/video/.test(mime) && !/audio/.test(mime)) throw `Kirim/Reply Video/Audio Yang Ingin Dijadikan MP3 Dengan Caption ${prefix + command}`
             if (!quoted) throw `Kirim/Reply Media Yang Ingin Dijadikan MP3 Dengan Caption ${prefix + command}`
-            replay(mess.wait)
+            reply(mess.wait)
             let media = await quoted.download()
             let { toAudio } = require('./lib/converter')
             let audio = await toAudio(media, 'mp4')
@@ -1877,7 +1883,7 @@ case 'bcgc': case 'bcgroup': {
             case 'tovn': case 'toptt': case 'toaudio': {
             if (!/video/.test(mime) && !/audio/.test(mime)) throw `Reply Video/Audio Yang Ingin Dijadikan VN Dengan Caption ${prefix + command}`
             if (!quoted) throw `Reply Video/Audio Yang Ingin Dijadikan VN Dengan Caption ${prefix + command}`
-            replay(mess.wait)
+            reply(mess.wait)
             let media = await quoted.download()
             let { toPTT } = require('./lib/converter')
             let audio = await toPTT(media, 'mp4')
@@ -1887,16 +1893,16 @@ case 'bcgc': case 'bcgroup': {
             case 'togif': {
                 if (!quoted) throw 'Reply Image'
                 if (!/webp/.test(mime)) throw `balas stiker dengan caption *${prefix + command}*`
-                replay(mess.wait)
+                reply(mess.wait)
 		        let { webp2mp4File } = require('./lib/uploader')
                 let media = await elaina.downloadAndSaveMediaMessage(quoted)
                 let webpToMp4 = await webp2mp4File(media)
-                await elaina.sendMessage(m.chat, { video: { url: webpToMp4.result, caption: 'Convert Webp To Video' }, gifPlayback: true }, { quoted: m })
+                await elaina.sendMessage(m.chat, { video: { url: webpToMp4.result, caption: 'Convert Webp To Video' }, gifPlayback: true, gifAttribution: "GIPHY", }, { quoted: m })
                 await fs.unlinkSync(media)
             }
             break
 	        case 'tourl': {
-                replay(mess.wait)
+                reply(mess.wait)
 	         	let { UploadFileUgu, webp2mp4File, TelegraPh } = require('./lib/uploader')
                 let media = await elaina.downloadAndSaveMediaMessage(quoted)
                 if (/image/.test(mime)) {
@@ -1925,7 +1931,7 @@ case 'bcgc': case 'bcgroup': {
                 if (/smooth/.test(command)) set = '-filter:v "minterpolate=\'mi_mode=mci:mc_mode=aobmc:vsbmc=1:fps=120\'"'
                 if (/tupai/.test(command)) set = '-filter:a "atempo=0.5,asetrate=65100"'
                 if (/audio/.test(mime)) {
-                replay(mess.wait)
+                reply(mess.wait)
                 let media = await elaina.downloadAndSaveMediaMessage(quoted)
                 let ran = getRandom('.mp3')
                 exec(`ffmpeg -i ${media} ${set} ${ran}`, (err, stderr, stdout) => {
@@ -1971,7 +1977,7 @@ case 'google': {
                 teks += `⭔ *Description* : ${g.snippet}\n`
                 teks += `⭔ *Link* : ${g.link}\n\n────────────────────────\n\n`
                 } 
-                replay(teks)
+                reply(teks)
                 })
                 }
                 break
@@ -2030,7 +2036,7 @@ case 'wallpaper': {
             break
             case 'wikimedia': {
                 if (!text) throw 'Masukkan Query Title'
-                replay(mess.wait)
+                reply(mess.wait)
 	        	let { wikimedia } = require('./lib/scraper')
                 anu = await wikimedia(text)
                 result = anu[Math.floor(Math.random() * anu.length)]
@@ -2066,7 +2072,7 @@ case 'wallpaper': {
             }
             break
 	        case 'ppcp': {
-                replay(mess.wait)
+                reply(mess.wait)
                 let anu = await fetchJson('https://raw.githubusercontent.com/iamriz7/kopel_/main/kopel.json')
                 let random = anu[Math.floor(Math.random() * anu.length)]
                 elaina.sendMessage(m.chat, { image: { url: random.male }, caption: `Couple Male` }, { quoted: m })
@@ -2075,7 +2081,7 @@ case 'wallpaper': {
     break
     case 'play': case 'ytplay': {
      if (!text) throw `Masukan Query! contoh : ${prefix + command} Clarity`
-     replay(mess.wait)
+     reply(mess.wait)
          let yts = require("yt-search")
             let search = await yts(text)
                let anu = search.videos[Math.floor(Math.random() * search.videos.length)]
@@ -2090,34 +2096,20 @@ ${anu.description}
 ⭔ Viewers: ${anu.views}
 ⭔ Uploaded: ${anu.ago}
 ⭔ Author: ${anu.author.name}`
-let message = await prepareWAMessageMedia({ image : { url: anu.thumbnail } }, { upload:   elaina.waUploadToServer })
-              template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
-                  templateMessage: {
-                      hydratedTemplate: {
-                        imageMessage: message.imageMessage,
-                          hydratedContentText: jembud,
-                            hydratedFooterText: `Result From ${text}`,
-                             hydratedButtons: [{                                
-                              urlButton: {
-                                    displayText: 'Url',
-                                    url: `${anu.url}`
-                                }
-                            }, {
-                                    urlButton: {
-                                    displayText: 'Channel',
-                                    url: `${anu.author.url}`
-                            }
-                            }, {
-                                quickReplyButton: {
-                                    displayText: 'Audio',
-                                    id: `${prefix}ytmp3 ${anu.url} 320kbps`
-                                    }
-                            }, {
-                                 quickReplyButton: {
-                                    displayText: 'Video',
-                                    id: `${prefix}ytmp4 ${anu.url} 360p`
-                                    }
-                            }]
+const gambart = await getBuffer(anu.thumbnail)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+     templateMessage: {
+         hydratedTemplate: {
+           hydratedContentText: jembud,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambart, 300, 300)},
+           hydratedFooterText: `Silahkan Pilih type yg sesuai`,
+           hydratedButtons: [
+                             { urlButton: { displayText: 'Url', url: `${anu.url}` } },
+                             { urlButton: { displayText: 'Channel', url: `${anu.author.url}` } }, 
+                             { quickReplyButton: { displayText: 'Audio', id: `${prefix}ytmp3 ${anu.url} 320kbps` } }, 
+                             { quickReplyButton: { displayText: 'Video', id: `${prefix}ytmp4 ${anu.url} 360p` } }
+                            ]
                         }
                     }
                 }), { userJid: m.chat, quoted: m })
@@ -2183,7 +2175,7 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
                 let { ytv } = require('./lib/y2mate')
                 let quality = args[1] ? args[1] : '360p'
                 let media = await ytv(text, quality)
-                if (media.filesize >= 999999) return replay('Video size is too big '+util.format(media))
+                if (media.filesize >= 999999) return reply('Video size is too big '+util.format(media))
                 elaina.sendMessage(m.chat, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: `${media.title}.mp4`, caption: `Result` }, { quoted: m })
             }
             break*/
@@ -2194,7 +2186,7 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
                 if (!text) throw `Contoh : ${prefix + command} https://youtu.be/Cv1Sc4sep9k 320kbps`
                 let quality = args[1] ? args[1] : '320kbps'
                 let media = await yta(text, quality)
-                if (media.filesize >= 999999) return replay('Size Media Terlalu Besar! '+util.format(media))
+                if (media.filesize >= 999999) return reply('Size Media Terlalu Besar! '+util.format(media))
                 elaina.sendImage(m.chat, media.thumb, `*• Tunggu Sebentar Memproses Media...*\n\n⭔ Title : ${media.title}\n⭔ File Size : ${media.filesizeF}\n⭔ Ext : MP3`, m)
                 elaina.sendMessage(m.chat, {document: { url: media.dl_link }, mimetype: 'audio/mpeg', fileName: `${media.title}.mp3`}, { quoted : m })
             }        
@@ -2203,7 +2195,7 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
             case 'ig': case 'igdl': case 'instagram': {
                 if (!text) throw 'Masukan Query'
                 if (!isUrl(args[0]) && !args[0].includes('instagram.com')) throw 'Link yang kamu berikan tidak.valid'
-                replay(mess.wait)
+                reply(mess.wait)
                 let urlnya = text
 	            hx.igdl(urlnya)
 	            .then(async(result) => {
@@ -2222,7 +2214,7 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
 	 		/*case 'fbdl': case 'fb': case 'facebook': {
                 if (!text) throw 'Masukkan Query Link!'
                 if (!isUrl(args[0]) && !args[0].includes('facebook.com')) throw 'Link yang kamu berikan tidak.valid'
-                replay(mess.wait)
+                reply(mess.wait)
                 xa.Facebook(`${text}`).then(async (data) => {
                     let txt = `*Facebook Downloader*\n\n`
                     txt += `*• Title :* ${data.title}\n`
@@ -2232,13 +2224,13 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
                     txt += `*• Url Source :* ${data.url}\n\n`
                 elaina.sendMessage(m.chat, { video: { url: data.medias[1].url }, caption: `${txt}`}, { quoted: m })
                 }).catch((err) => {
-                    replay(`*Gagal Saat mendownload media dan mengirm video*`)
+                    reply(`*Gagal Saat mendownload media dan mengirm video*`)
                 })
             }
             break*/
             case 'igs': case 'igstory': case 'instagramstory': {
                 if (!text) throw 'Enter Username!'                
-                replay(mess.wait)                
+                reply(mess.wait)                
 	            hx.igstory(text)
 	            .then(async(result) => {
 		        for(let i of result.medias){
@@ -2256,13 +2248,13 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
 	    case 'getmusic': {
                 let { yta } = require('./lib/y2mate')
                 if (!text) throw `Contoh : ${prefix + command} 1`
-                if (!m.quoted) return replay('Reply Pesan')
+                if (!m.quoted) return reply('Reply Pesan')
                 if (!m.quoted.isBaileys) throw `Hanya Bisa Membalas Pesan Dari Bot`
 	        	let urls = quoted.text.match(new RegExp(/(?:https?:\/\/)?(?:youtu\.be\/|(?:www\.|m\.)?youtube\.com\/(?:watch|v|embed|shorts)(?:\.php)?(?:\?.*v=|\/))([a-zA-Z0-9\_-]+)/, 'gi'))
                 if (!urls) throw `Mungkin pesan yang anda reply tidak mengandung result ytsearch`
                 let quality = args[1] ? args[1] : '128kbps'
                 let media = await yta(urls[text - 1], quality)
-                if (media.filesize >= 100000) return replay('File Melebihi Batas '+util.format(media))
+                if (media.filesize >= 100000) return reply('File Melebihi Batas '+util.format(media))
                 elaina.sendImage(m.chat, media.thumb, `⭔ Title : ${media.title}\n⭔ File Size : ${media.filesizeF}\n⭔ Url : ${urls[text - 1]}\n⭔ Ext : MP3\n⭔ Resolusi : ${args[1] || '128kbps'}`, m)
                 elaina.sendMessage(m.chat, { audio: { url: media.dl_link }, mimetype: 'audio/mpeg', fileName: `${media.title}.mp3` }, { quoted: m })
             }
@@ -2270,19 +2262,19 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
             case 'getvideo': {
                 let { ytv } = require('./lib/y2mate')
                 if (!text) throw `Contoh : ${prefix + command} 1`
-                if (!m.quoted) return replay('Reply Pesan')
+                if (!m.quoted) return reply('Reply Pesan')
                 if (!m.quoted.isBaileys) throw `Hanya Bisa Membalas Pesan Dari Bot`
                 let urls = quoted.text.match(new RegExp(/(?:https?:\/\/)?(?:youtu\.be\/|(?:www\.|m\.)?youtube\.com\/(?:watch|v|embed|shorts)(?:\.php)?(?:\?.*v=|\/))([a-zA-Z0-9\_-]+)/, 'gi'))
                 if (!urls) throw `Mungkin pesan yang anda reply tidak mengandung result ytsearch`
                 let quality = args[1] ? args[1] : '360p'
                 let media = await ytv(urls[text - 1], quality)
-                if (media.filesize >= 100000) return replay('File Melebihi Batas '+util.format(media))
+                if (media.filesize >= 100000) return reply('File Melebihi Batas '+util.format(media))
                 elaina.sendMessage(m.chat, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: `${media.title}.mp4`, caption: `⭔ Title : ${media.title}\n⭔ File Size : ${media.filesizeF}\n⭔ Url : ${urls[text - 1]}\n⭔ Ext : MP3\n⭔ Resolusi : ${args[1] || '360p'}` }, { quoted: m })
             }
             break
             case 'tiktok': case'tiktoknowm': case 'ttdownload':{
             if (!text) throw 'No Query Link!'
-            replay(mess.wait)
+            reply(mess.wait)
             hx.ttdownloader(q).then( data => {
             elaina.sendMessage(m.chat, {
             video: { url: data.nowm },
@@ -2320,23 +2312,7 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
                 }
                 elaina.sendMessage(m.chat, buttonMessage, { quoted: m })
             }
-            break
-	        case 'motivasi': case 'dilanquote': case 'bucinquote': case 'katasenja': case 'puisi': {
-                let anu = await fetchJson(api('zenz', '/api/'+command, {}, 'apikey'))
-                let buttons = [
-                    {buttonId: `motivasi`, buttonText: {displayText: 'Next'}, type: 1}
-                ]
-                let buttonMessage = {
-                    text: anu.result.message,
-                    footer: 'Press The Button Below',
-                    buttons: buttons,
-                    headerType: 2
-                }
-                elaina.sendMessage(m.chat, buttonMessage, { quoted: m })
-            }
-            break            
-
-	      	               	      	               
+            break	      	               	      	               
         case 'ringtone': {
 		if (!text) throw `Contoh : ${prefix + command} black rover`
         let { ringtone } = require('./lib/scraper')
@@ -2344,10 +2320,7 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
 		let result = anu[Math.floor(Math.random() * anu.length)]
 		elaina.sendMessage(m.chat, { audio: { url: result.audio }, fileName: result.title+'.mp3', mimetype: 'audio/mpeg' }, { quoted: m })
 	    }
-	    break
-	    
-	    
-	    			  			  
+	    break	   	   			  			  	   	    			  			  
           case 'setcmd': {
                 if (!m.quoted) throw 'Reply Pesan!'
                 if (!m.quoted.fileSha256) throw 'SHA256 Hash Missing'
@@ -2361,7 +2334,7 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
                     at: + new Date,
                     locked: false,
                 }
-                replay(`Done!`)
+                reply(`Done!`)
             }
             break
           case 'delcmd': {
@@ -2369,7 +2342,7 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
                 if (!hash) throw `Tidak ada hash`
                 if (global.db.data.sticker[hash] && global.db.data.sticker[hash].locked) throw 'You have no permission to delete this sticker command'              
                 delete global.db.data.sticker[hash]
-                replay(`Done!`)
+                reply(`Done!`)
             }
             break
             case 'listcmd': {
@@ -2388,7 +2361,7 @@ ${Object.entries(global.db.data.sticker).map(([key, value], index) => `${index +
                 let hash = m.quoted.fileSha256.toString('base64')
                 if (!(hash in global.db.data.sticker)) throw 'Hash not found in database'
                 global.db.data.sticker[hash].locked = !/^un/i.test(command)
-                replay('Done!')
+                reply('Done!')
             }
             break
             case 'addmsg': {
@@ -2397,7 +2370,7 @@ ${Object.entries(global.db.data.sticker).map(([key, value], index) => `${index +
                 let msgs = global.db.data.database
                 if (text.toLowerCase() in msgs) throw `'${text}' telah terdaftar di list pesan`
                 msgs[text.toLowerCase()] = quoted.fakeObj
-replay(`Berhasil menambahkan pesan di list pesan sebagai '${text}'
+reply(`Berhasil menambahkan pesan di list pesan sebagai '${text}'
     
 Akses dengan ${prefix}getmsg ${text}
 
@@ -2418,14 +2391,14 @@ Lihat list Pesan Dengan ${prefix}listmsg`)
 		for (let i of seplit) {
 		    teks += `⬡ *Name :* ${i.nama}\n⬡ *Type :* ${getContentType(i.message).replace(/Message/i, '')}\n────────────────────────\n\n`
 	        }
-	        replay(teks)
+	        reply(teks)
 	    }
 	    break
             case 'delmsg': case 'deletemsg': {
 	        let msgs = global.db.data.database
-	        if (!(text.toLowerCase() in msgs)) return replay(`'${text}' tidak terdaftar didalam list pesan`)
+	        if (!(text.toLowerCase() in msgs)) return reply(`'${text}' tidak terdaftar didalam list pesan`)
 		delete msgs[text.toLowerCase()]
-		replay(`Berhasil menghapus '${text}' dari list pesan`)
+		reply(`Berhasil menghapus '${text}' dari list pesan`)
             }
 	    break	   
 
@@ -2433,31 +2406,20 @@ Lihat list Pesan Dengan ${prefix}listmsg`)
 
 case 'tes': case 'test': case 'statusbot': case 'bot': case 'status':{
                 anu = `*• Status Bot : Online*`
-let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4), gifPlayback: true }, { upload: elaina.waUploadToServer })
+let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4), gifPlayback: true, gifAttribution: "GIPHY" }, { upload: elaina.waUploadToServer })
      const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
            videoMessage: message.videoMessage,
            hydratedContentText: anu,
            hydratedFooterText: ` ⫹⫺ HostName: ${os.hostname()}\n ⫹⫺ Platform: ${os.platform()}\n ⫹⫺ TotalUser: ${Object.keys(global.db.data.users).length}`,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                            }, {
-                                quickReplyButton: {
-                                    displayText: 'Sewa',
-                                    id: `${prefix}sewa`
-                                }
-                            }, {
-                                quickReplyButton: {
-                                    displayText: 'Menu',
-                                    id: `${prefix}menu`
-                                }
-                            }]
-                        }
-                    }
+                            hydratedButtons: [
+                            { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } }, 
+                            { quickReplyButton: { displayText: 'Sewa', id: `${prefix}sewa` } },
+                            { quickReplyButton: { displayText: 'Menu', id: `${prefix}menu`} }
+                              ]
+                          }
+                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
               }
@@ -2476,40 +2438,20 @@ case 'menu': case 'help':{
 │ ⫹⫺ Platform : ${os.platform()}
 │ ⫹⫺ TotalUser: ${Object.keys(global.db.data.users).length}
 ╰──────⭓`
-let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4), gifPlayback: true }, { upload: elaina.waUploadToServer })
+let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4), gifPlayback: true, gifAttribution: "GIPHY" }, { upload: elaina.waUploadToServer })
      const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
       templateMessage: {
          hydratedTemplate: {
            videoMessage: message.videoMessage,
            hydratedContentText: `*• Information* `,
                hydratedFooterText: anu,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                            }, {
-                            	urlButton: {
-                                displayText: 'Source Code',
-                                    url: 'https://github.com/DikaArdnt/Hisoka-Morou'
-                                }
-                            }, {
-                                quickReplyButton: {
-                                    displayText: 'All Menu',
-                                    id: `${prefix}allmenu`
-                                }
-                                }, {
-                                quickReplyButton: {
-                                    displayText: 'List Menu',
-                                    id: `${prefix}listmenu`
-                                }
-                                }, {
-                                quickReplyButton: {
-                                    displayText: 'Sewa Bot',
-                                    id: `${prefix}sewa`
-                                },
-                                
-                            }]
+                            hydratedButtons: [
+                            { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } }, 
+                            { urlButton: { displayText: 'Source Code', url: 'https://github.com/SkylarKaf/Elaina-md' } }, 
+                            { quickReplyButton: { displayText: 'All Menu', id: `${prefix}allmenu` } },
+                            { quickReplyButton: { displayText: 'List Menu', id: `${prefix}command`} },
+                             { quickReplyButton: { displayText: 'Sewa Bot', id: `${prefix}sewa` } }
+                            ]
                         }
                     }
                 }), { userJid: m.chat })
@@ -2522,187 +2464,169 @@ let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4
   anu = `*• All Menu*
   
   *[ 🔎 ]  Searching*  
-  > ${prefix}play [query]
-  > ${prefix}google [query]
-  > ${prefix}pinterest [query]
-  > ${prefix}wallpaper [query]
-  > ${prefix}wikimedia [query]
-  > ${prefix}ytsearch [query]
-  > ${prefix}ringtone [query]
-  > ${prefix}ppcp
+ > ${prefix}play [query]
+ > ${prefix}google [query]
+ > ${prefix}pinterest [query]
+ > ${prefix}wallpaper [query]
+ > ${prefix}wikimedia [query]
+ > ${prefix}ytsearch [query]
+ > ${prefix}ringtone [query]
+ > ${prefix}ppcp
   
   *[ 📍 ]  Groub Menu*  
-  > ${prefix}add @user
-  > ${prefix}kick @user
-  > ${prefix}promote @user
-  > ${prefix}demote @user
-  > ${prefix}listonline
-  > ${prefix}grouplink
-  > ${prefix}setgrouppp
-  > ${prefix}setname [text]
-  > ${prefix}group [option]
-  > ${prefix}editinfo [option]
-  > ${prefix}grupinfo
+ > ${prefix}add @user
+ > ${prefix}kick @user
+ > ${prefix}promote @user
+ > ${prefix}demote @user
+ > ${prefix}listonline
+ > ${prefix}grouplink
+ > ${prefix}setgrouppp
+ > ${prefix}setname [text]
+ > ${prefix}group [option]
+ > ${prefix}editinfo [option]
+ > ${prefix}grupinfo
   
   *[ 📥 ]  Downloader*  
-  > ${prefix}instagram [url]
-  > ${prefix}igs [query]
-  > ${prefix}tiktok [url]
-  > ${prefix}tiktokmp3 [url]
-  > ${prefix}ytmp3 [url]
-  > ${prefix}ytmp4 [url]
-  > ${prefix}getmusic [query]
-  > ${prefix}getvideo [query
+ > ${prefix}instagram [url]
+ > ${prefix}igs [query]
+ > ${prefix}tiktok [url]
+ > ${prefix}tiktokmp3 [url]
+ > ${prefix}ytmp3 [url]
+ > ${prefix}ytmp4 [url]
+ > ${prefix}getmusic [query]
+ > ${prefix}getvideo [query
   
   *[ ♻️ ]  Converter*  
-  > ${prefix}attp
-  > ${prefix}ttp
-  > ${prefix}sticker
-  > ${prefix}smeme
-  > ${prefix}ebinary
-  > ${prefix}dbinary
-  > ${prefix}emojimix
-  > ${prefix}emojis  
-  > ${prefix}toimage
-  > ${prefix}tomp4
-  > ${prefix}tomp3
-  > ${prefix}tovn
-  > ${prefix}togif
-  > ${prefix}tourl
-  > ${prefix}bass
-  > ${prefix}blown
-  > ${prefix}deep
-  > ${prefix}earrape
-  > ${prefix}fast
-  > ${prefix}fat
-  > ${prefix}nightcore
-  > ${prefix}reverse
-  > ${prefix}robot
-  > ${prefix}slow
-  > ${prefix}squirrel
+ > ${prefix}attp
+ > ${prefix}ttp
+ > ${prefix}sticker
+ > ${prefix}smeme
+ > ${prefix}ebinary
+ > ${prefix}dbinary
+ > ${prefix}emojimix
+ > ${prefix}emojis  
+ > ${prefix}toimage
+ > ${prefix}tomp4
+ > ${prefix}tomp3
+ > ${prefix}tovn
+ > ${prefix}togif
+ > ${prefix}tourl
+ > ${prefix}bass
+ > ${prefix}blown
+ > ${prefix}deep
+ > ${prefix}earrape
+ > ${prefix}fast
+ > ${prefix}fat
+ > ${prefix}nightcore
+ > ${prefix}reverse
+ > ${prefix}robot
+ > ${prefix}slow
+ > ${prefix}squirrel
   
   *[ 🇯🇵 ] Anime Menu*
-  > ${prefix}loli
-  > ${prefix}bully
-  > ${prefix}cuddle
-  > ${prefix}cry
-  > ${prefix}hug
-  > ${prefix}awoo
-  > ${prefix}kiss
-  > ${prefix}lick
-  > ${prefix}pat
-  > ${prefix}smug
-  > ${prefix}bonk
-  > ${prefix}yeet
-  > ${prefix}blush
-  > ${prefix}smile
-  > ${prefix}wave
-  > ${prefix}highfive
-  > ${prefix}handhold
-  > ${prefix}nom
-  > ${prefix}glomp
-  > ${prefix}bite
-  > ${prefix}slap
-  > ${prefix}kill
-  > ${prefix}happy
-  > ${prefix}wink
-  > ${prefix}poke
-  > ${prefix}dance
-  > ${prefix}cringe
+ > ${prefix}loli
+ > ${prefix}bully
+ > ${prefix}cuddle
+ > ${prefix}cry
+ > ${prefix}hug
+ > ${prefix}awoo
+ > ${prefix}kiss
+ > ${prefix}lick
+ > ${prefix}pat
+ > ${prefix}smug
+ > ${prefix}bonk
+ > ${prefix}yeet
+ > ${prefix}blush
+ > ${prefix}smile
+ > ${prefix}wave
+ > ${prefix}highfive
+ > ${prefix}handhold
+ > ${prefix}nom
+ > ${prefix}glomp
+ > ${prefix}bite
+ > ${prefix}slap
+ > ${prefix}kill
+ > ${prefix}happy
+ > ${prefix}wink
+ > ${prefix}poke
+ > ${prefix}dance
+ > ${prefix}cringe
   
   *[ ⚔ ]  Rpg Games*  
-  > ${prefix}inventory
-  > ${prefix}leaderboard
-  > ${prefix}mining
-  > ${prefix}buy
-  > ${prefix}sell
-  > ${prefix}heal
-  > ${prefix}berburu
+ > ${prefix}inventory
+ > ${prefix}leaderboard
+ > ${prefix}mining
+ > ${prefix}buy
+ > ${prefix}sell
+ > ${prefix}heal
+ > ${prefix}berburu
   
   *[ 🎲 ] Fun Menu*
-  > ${prefix}apakah
-  > ${prefix}kapankah
-  > ${prefix}bisakah
-  > ${prefix}rate
-  > ${prefix}family100
-  > ${prefix}tebak [option]
-  > ${prefix}math [option]
-  > ${prefix}tictactoe
-  > ${prefix}suitpvp
+ > ${prefix}apakah
+ > ${prefix}kapankah
+ > ${prefix}bisakah
+ > ${prefix}rate
+ > ${prefix}family100
+ > ${prefix}tebak [option]
+ > ${prefix}math [option]
+ > ${prefix}tictactoe
+ > ${prefix}suitpvp
 
   *[ 📌 ]  Other Menu*
-  > ${prefix}ping
-  > ${prefix}owner
-  > ${prefix}sewa
-  > ${prefix}sc
-  > ${prefix}donate
-  > ${prefix}tqtq
-  > ${prefix}delete
-  > ${prefix}chatinfo
-  > ${prefix}quoted
-  > ${prefix}listpc
-  > ${prefix}listgc
-  > ${prefix}listonline
-  > ${prefix}report (report bug to owner)
+ > ${prefix}ping
+ > ${prefix}owner
+ > ${prefix}sewa
+ > ${prefix}sc
+ > ${prefix}donate
+ > ${prefix}tqtq
+ > ${prefix}delete
+ > ${prefix}chatinfo
+ > ${prefix}quoted
+ > ${prefix}listpc
+ > ${prefix}listgc
+ > ${prefix}listonline
+ > ${prefix}report (report bug to owner)
   
   *[ 🖇 ]  Database* 
-  > ${prefix}setcmd
-  > ${prefix}delcmd
-  > ${prefix}listcmd
-  > ${prefix}lockcmd
-  > ${prefix}addmsg
-  > ${prefix}listmsg
-  > ${prefix}getmsg
-  > ${prefix}delmsg
+ > ${prefix}setcmd
+ > ${prefix}delcmd
+ > ${prefix}listcmd
+ > ${prefix}lockcmd
+ > ${prefix}addmsg
+ > ${prefix}listmsg
+ > ${prefix}getmsg
+ > ${prefix}delmsg
   
   *[ 👑 ]  Owner Menu*
-  > ${prefix}chat [option]
-  > ${prefix}enters [link]
-  > ${prefix}react
-  > ${prefix}leave
-  > ${prefix}ephemeral [option]
-  > ${prefix}setbotpp
-  > ${prefix}block @user
-  > ${prefix}unblock @user
-  > ${prefix}bcgroup`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-    const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
-      templateMessage: {
+ > ${prefix}chat [option]
+ > ${prefix}enters [link]
+ > ${prefix}react
+ > ${prefix}leave
+ > ${prefix}ephemeral [option]
+ > ${prefix}setbotpp
+ > ${prefix}block @user
+ > ${prefix}unblock @user
+ > ${prefix}bcgroup`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+     templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
-               hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                            },
-                            {
-                                quickReplyButton: {
-                                    displayText: 'Owner Bot',
-                                    id: `${prefix}owner`
-                                    }
-                                }, 
-                                {
-                                quickReplyButton: {
-                                    displayText: 'List Menu',
-                                    id: `${prefix}listmenu`
-                                    }
-                                }, 
-                                {
-                                quickReplyButton: {
-                                    displayText: 'Sewa Bot',
-                                    id: `${prefix}sewa`
-                                }
-                               
-                            }]
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
+           hydratedFooterText: sxs,
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner Bot', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List Menu', id: `${prefix}listmenu` } }, 
+                  { quickReplyButton: { displayText: 'Sewa Bot', id: `${prefix}sewa` } }
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
                 }
-          break
+          break        
 case 'command': case 'listmenu':{
     timestampe = speed();
          latensie = speed() - timestampe
@@ -2817,447 +2741,347 @@ let template = await generateWAMessageFromContent(m.chat, proto.Message.fromObje
             case 'searchmenu': case 'searching': {
               	sxs = `⭔ Don't forget to donate :)`
 	            anu = `  *[ 🔍 ] Searching*	            
-  > ${prefix}play [query]
-  > ${prefix}google [query]
-  > ${prefix}pinterest [query]
-  > ${prefix}wallpaper [query]
-  > ${prefix}wikimedia [query]
-  > ${prefix}ytsearch [query]
-  > ${prefix}ringtone [query]
-  > ${prefix}ppcp`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+ > ${prefix}play [query]
+ > ${prefix}google [query]
+ > ${prefix}pinterest [query]
+ > ${prefix}wallpaper [query]
+ > ${prefix}wikimedia [query]
+ > ${prefix}ytsearch [query]
+ > ${prefix}ringtone [query]
+ > ${prefix}ppcp`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
            hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                              }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'List',
-                                    id: `${prefix}listmenu`
-                                }
-                            }]
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-            break
+                }
+          break   
             case 'groubmenu': case 'grupmenu': {
             	sxs = `⭔ Don't forget to donate :)`
 	            anu = `  *[ 📍 ]  Groub Menu*             
-  > ${prefix}add @user
-  > ${prefix}kick @user
-  > ${prefix}promote @user
-  > ${prefix}demote @user
-  > ${prefix}listonline
-  > ${prefix}grouplink
-  > ${prefix}setgrouppp
-  > ${prefix}setname [text]
-  > ${prefix}group [option]
-  > ${prefix}editinfo [option]
-  > ${prefix}grupinfo`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+ > ${prefix}add @user
+ > ${prefix}kick @user
+ > ${prefix}promote @user
+ > ${prefix}demote @user
+ > ${prefix}listonline
+ > ${prefix}grouplink
+ > ${prefix}setgrouppp
+ > ${prefix}setname [text]
+ > ${prefix}group [option]
+ > ${prefix}editinfo [option]
+ > ${prefix}grupinfo`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
            hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                              }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'List',
-                                    id: `${prefix}listmenu`
-                                }
-                            }]
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-            break
+                }
+          break   
             case 'downloadmenu': case 'downloadermenu': {
                 sxs = `⭔ Don't forget to donate :)`
 	            anu = `  *[ 📥 ]  Downloader*              
-  > ${prefix}instagram [url]
-  > ${prefix}igs [query]
-  > ${prefix}tiktok [url]
-  > ${prefix}tiktokmp3 [url]
-  > ${prefix}ytmp3 [url]
-  > ${prefix}ytmp4 [url]
-  > ${prefix}getmusic [query]
-  > ${prefix}getvideo [query`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+ > ${prefix}instagram [url]
+ > ${prefix}igs [query]
+ > ${prefix}tiktok [url]
+ > ${prefix}tiktokmp3 [url]
+ > ${prefix}ytmp3 [url]
+ > ${prefix}ytmp4 [url]
+ > ${prefix}getmusic [query]
+ > ${prefix}getvideo [query`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
            hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                              }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'List',
-                                    id: `${prefix}listmenu`
-                                }
-                            }]
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-            break
+                }
+          break   
             case 'convertmenu': case 'convertermenu': {
                 sxs = `⭔ Don't forget to donate :)`
 	            anu = `  *[ ♻️ ]  Converter*                
-  > ${prefix}attp
-  > ${prefix}ttp
-  > ${prefix}sticker
-  > ${prefix}smeme
-  > ${prefix}ebinary
-  > ${prefix}dbinary
-  > ${prefix}emojimix
-  > ${prefix}emojis  
-  > ${prefix}toimage
-  > ${prefix}tomp4
-  > ${prefix}tomp3
-  > ${prefix}tovn
-  > ${prefix}togif
-  > ${prefix}tourl
-  > ${prefix}bass
-  > ${prefix}blown
-  > ${prefix}deep
-  > ${prefix}earrape
-  > ${prefix}fast
-  > ${prefix}fat
-  > ${prefix}nightcore
-  > ${prefix}reverse
-  > ${prefix}robot
-  > ${prefix}slow
-  > ${prefix}squirrel`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+ > ${prefix}attp
+ > ${prefix}ttp
+ > ${prefix}sticker
+ > ${prefix}smeme
+ > ${prefix}ebinary
+ > ${prefix}dbinary
+ > ${prefix}emojimix
+ > ${prefix}emojis  
+ > ${prefix}toimage
+ > ${prefix}tomp4
+ > ${prefix}tomp3
+ > ${prefix}tovn
+ > ${prefix}togif
+ > ${prefix}tourl
+ > ${prefix}bass
+ > ${prefix}blown
+ > ${prefix}deep
+ > ${prefix}earrape
+ > ${prefix}fast
+ > ${prefix}fat
+ > ${prefix}nightcore
+ > ${prefix}reverse
+ > ${prefix}robot
+ > ${prefix}slow
+ > ${prefix}squirrel`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
            hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                              }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'List',
-                                    id: `${prefix}listmenu`
-                                }
-                            }]
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-            break
+                }
+          break   
             case 'animemenu': {
             	sxs = `⭔ Don't forget to donate :)`
 	            anu = `  *[ 🇯🇵 ] Anime Menu*      
-  > ${prefix}loli
-  > ${prefix}bully
-  > ${prefix}cuddle
-  > ${prefix}cry
-  > ${prefix}hug
-  > ${prefix}awoo
-  > ${prefix}kiss
-  > ${prefix}lick
-  > ${prefix}pat
-  > ${prefix}smug
-  > ${prefix}bonk
-  > ${prefix}yeet
-  > ${prefix}blush
-  > ${prefix}smile
-  > ${prefix}wave
-  > ${prefix}highfive
-  > ${prefix}handhold
-  > ${prefix}nom
-  > ${prefix}glomp
-  > ${prefix}bite
-  > ${prefix}slap
-  > ${prefix}kill
-  > ${prefix}happy
-  > ${prefix}wink
-  > ${prefix}poke
-  > ${prefix}dance
-  > ${prefix}cringe`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+ > ${prefix}loli
+ > ${prefix}bully
+ > ${prefix}cuddle
+ > ${prefix}cry
+ > ${prefix}hug
+ > ${prefix}awoo
+ > ${prefix}kiss
+ > ${prefix}lick
+ > ${prefix}pat
+ > ${prefix}smug
+ > ${prefix}bonk
+ > ${prefix}yeet
+ > ${prefix}blush
+ > ${prefix}smile
+ > ${prefix}wave
+ > ${prefix}highfive
+ > ${prefix}handhold
+ > ${prefix}nom
+ > ${prefix}glomp
+ > ${prefix}bite
+ > ${prefix}slap
+ > ${prefix}kill
+ > ${prefix}happy
+ > ${prefix}wink
+ > ${prefix}poke
+ > ${prefix}dance
+ > ${prefix}cringe`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
            hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                              }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'List',
-                                    id: `${prefix}listmenu`
-                                }
-                            }]
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-             }
-             break
+                }
+          break   
              case 'rpggames': case 'rpgmenu': {
                 sxs = `⭔ Don't forget to donate :)`
 	            anu = `  *[ ⚔ ]  Rpg Games*              
-  > ${prefix}inventory
-  > ${prefix}leaderboard
-  > ${prefix}mining
-  > ${prefix}buy
-  > ${prefix}sell
-  > ${prefix}heal
-  > ${prefix}berburu`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+ > ${prefix}inventory
+ > ${prefix}leaderboard
+ > ${prefix}mining
+ > ${prefix}buy
+ > ${prefix}sell
+ > ${prefix}heal
+ > ${prefix}berburu`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
            hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                              }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'List',
-                                    id: `${prefix}listmenu`
-                                }
-                            }]
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-            break
+                }
+          break   
             case 'funmenu': {
             sxs = `⭔ Don't forget to donate :)`
 	            anu = `  *[ 🎲 ]  Fun Menu* 
-  > ${prefix}apakah
-  > ${prefix}kapankah
-  > ${prefix}bisakah
-  > ${prefix}rate
-  > ${prefix}family100
-  > ${prefix}tebak [option]
-  > ${prefix}math [option]
-  > ${prefix}tictactoe
-  > ${prefix}suitpvp`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+ > ${prefix}apakah
+ > ${prefix}kapankah
+ > ${prefix}bisakah
+ > ${prefix}rate
+ > ${prefix}family100
+ > ${prefix}tebak [option]
+ > ${prefix}math [option]
+ > ${prefix}tictactoe
+ > ${prefix}suitpvp`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
            hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                              }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'List',
-                                    id: `${prefix}listmenu`
-                                }
-                            }]
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-            break
+                }
+          break   
             case 'othermenu': {
             	sxs = `⭔ Don't forget to donate :)`
 	            anu = `  *[ 📌 ]  Other Menu*           
-  > ${prefix}ping
-  > ${prefix}owner
-  > ${prefix}sewa
-  > ${prefix}sc
-  > ${prefix}donate
-  > ${prefix}tqtq
-  > ${prefix}delete
-  > ${prefix}chatinfo
-  > ${prefix}quoted
-  > ${prefix}listpc
-  > ${prefix}listgc
-  > ${prefix}report (report bug to owner)`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+ > ${prefix}ping
+ > ${prefix}owner
+ > ${prefix}sewa
+ > ${prefix}sc
+ > ${prefix}donate
+ > ${prefix}tqtq
+ > ${prefix}delete
+ > ${prefix}chatinfo
+ > ${prefix}quoted
+ > ${prefix}listpc
+ > ${prefix}listgc
+ > ${prefix}report (report bug to owner)`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
            hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                              }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'List',
-                                    id: `${prefix}listmenu`
-                                }
-                            }]
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-            break
+                }
+          break   
             case 'databasemenu': {
             	sxs = `⭔ Don't forget to donate :)`
 	            anu = `  *[ 🖇 ]  Database*        
-  > ${prefix}setcmd
-  > ${prefix}delcmd
-  > ${prefix}listcmd
-  > ${prefix}lockcmd
-  > ${prefix}addmsg
-  > ${prefix}listmsg
-  > ${prefix}getmsg
-  > ${prefix}delmsg`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+ > ${prefix}setcmd
+ > ${prefix}delcmd
+ > ${prefix}listcmd
+ > ${prefix}lockcmd
+ > ${prefix}addmsg
+ > ${prefix}listmsg
+ > ${prefix}getmsg
+ > ${prefix}delmsg`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
            hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                              }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'List',
-                                    id: `${prefix}listmenu`
-                                }
-                            }]
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-            break
+                }
+          break   
             case 'ownermenu': {
             	sxs = `⭔ Don't forget to donate :)`
 	            anu = `  *[ 👑 ]  Owner Menu*     
-  > ${prefix}chat [option]
-  > ${prefix}enters [link]
-  > ${prefix}react
-  > ${prefix}leave
-  > ${prefix}ephemeral [option]
-  > ${prefix}setbotpp
-  > ${prefix}block @user
-  > ${prefix}unblock @user
-  > ${prefix}bcgroup`
-let message = await prepareWAMessageMedia({ image: await getBuffer(global.menuimg)}, { upload: elaina.waUploadToServer })
-     const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+ > ${prefix}chat [option]
+ > ${prefix}enters [link]
+ > ${prefix}react
+ > ${prefix}leave
+ > ${prefix}ephemeral [option]
+ > ${prefix}setbotpp
+ > ${prefix}block @user
+ > ${prefix}unblock @user
+ > ${prefix}bcgroup`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
          hydratedTemplate: {
-           imageMessage: message.imageMessage,
            hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
            hydratedFooterText: sxs,
-                            hydratedButtons: [{
-                                urlButton: {
-                                    displayText: 'Profile',
-                                    url: 'https://s.id/Skylarkaf'
-                                }
-                              }, {
-                                quickReplyButton: {
-                                    displayText: 'Owner',
-                                    id: `${prefix}owner`
-                                }
-                               }, {
-                                quickReplyButton: {
-                                    displayText: 'List',
-                                    id: `${prefix}listmenu`
-                                }
-                            }]
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
                         }
                     }
                 }), { userJid: m.chat })
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-            break
+                }
+          break   
 
 
 
