@@ -148,9 +148,9 @@ Kon = await getBuffer(`https://hardianto.xyz/api/welcome3?profile=${encodeURICom
 Tol = await getBuffer(`https://hardianto.xyz/api/goodbye3?profile=${encodeURIComponent(ppuser)}&name=${encodeURIComponent(nama)}&bg=https://telegra.ph/file/045471598515af3cbed67.jpg&namegb=${encodeURIComponent(metadata.subject)}&member=${encodeURIComponent(memb)}`)
                  
                    if (anu.action == 'add') {
-                    elaina.sendMessage(anu.id, { image: Kon, contextInfo: { mentionedJid: [num] }, caption: `Welcome @${num.split("@")[0]}`})
+                    elaina.sendMessage(anu.id, { image: { url: ppuser }, contextInfo: { mentionedJid: [num] }, caption: `Welcome @${num.split("@")[0]}` })
                 } else if (anu.action == 'remove') {
-                    elaina.sendMessage(anu.id, { image: Tol, contextInfo: { mentionedJid: [num] }, caption: `Byee @${num.split("@")[0]}`})
+                    elaina.sendMessage(anu.id, { image: { url: ppuser }, contextInfo: { mentionedJid: [num] }, caption: `Bye @${num.split("@")[0]}` })
                 }
             }
         } catch (err) {
