@@ -661,7 +661,7 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
             }
             break
    case 'sc': case 'script': case 'sourcecode':{
-            reply('*• Script Base Original:*\nhttps://github.com/DikaArdnt/Hisoka-Morou\n\n*• Edited Script:*\nhttps://github.com/SkylarKaf/Elaina-MD\n\nDont Forget Give Star :)')
+            reply('*• Script Base Original:*\nhttps://github.com/DikaArdnt/elaina-Morou\n\n*• Edited Script:*\nhttps://github.com/SkylarKaf/Elaina-MD\n\nDont Forget Give Star :)')
             }
             break
    case 'donate': case 'donasi':{
@@ -1780,6 +1780,26 @@ case 'bcgc': case 'bcgroup': {
                 }
             }
             break                  
+            case 'stickerwm': case 'swm': case 'stickergifwm': case 'sgifwm': {
+                if (!quoted) throw `Balas Video/Image Dengan Caption ${prefix + command} teks1|teks2`
+                let [teks1, teks2] = text.split`|`
+                if (!teks1) throw `Kirim/reply image/video dengan caption ${prefix + command} teks1|teks2`
+                if (!teks2) throw `Kirim/reply image/video dengan caption ${prefix + command} teks1|teks2`
+            	m.reply(mess.wait)
+                if (/image/.test(mime)) {
+                    let media = await quoted.download()
+                    let encmedia = await elaina.sendImageAsSticker(m.chat, media, m, { packname: teks1, author: teks2 })
+                    await fs.unlinkSync(encmedia)
+                } else if (/video/.test(mime)) {
+                    if ((quoted.msg || quoted).seconds > 11) return m.reply('Maksimal 10 detik!')
+                    let media = await quoted.download()
+                    let encmedia = await elaina.sendVideoAsSticker(m.chat, media, m, { packname: teks1, author: teks2 })
+                    await fs.unlinkSync(encmedia)
+                } else {
+                    throw `Kirim Gambar/Video Dengan Caption ${prefix + command}\nDurasi Video 1-9 Detik`
+                }
+            }
+            break
 	       case 'smeme': case 'stickmeme': case 'stikmeme': case 'stickermeme': case 'stikermeme': {
 	        let respond = `Kirim/reply image/sticker dengan caption ${prefix + command} text1|text2`
 	        if (!/image/.test(mime)) throw respond
@@ -2178,14 +2198,12 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
             case 'ytmp3': case 'ytaudio': {
                 let { yta } = require('./lib/y2mate')
                 if (!text) throw `Contoh : ${prefix + command} https://youtu.be/Cv1Sc4sep9k 320kbps`
-                let quality = args[1] ? args[1] : '320kbps'
+                let quality = args[1] ? args[1] : '128kbps'
                 let media = await yta(text, quality)
                 if (media.filesize >= 999999) return reply('Size Media Terlalu Besar! '+util.format(media))
-                elaina.sendImage(m.chat, media.thumb, `*• Tunggu Sebentar Memproses Media...*\n\n⭔ Title : ${media.title}\n⭔ File Size : ${media.filesizeF}\n⭔ Ext : MP3`, m)
                 elaina.sendMessage(m.chat, {document: { url: media.dl_link }, mimetype: 'audio/mpeg', fileName: `${media.title}.mp3`}, { quoted : m })
             }        
-            break
-            
+            break         
             case 'ig': case 'igdl': case 'instagram': {
                 if (!text) throw 'Masukan Query'
                 if (!isUrl(args[0]) && !args[0].includes('instagram.com')) throw 'Link yang kamu berikan tidak.valid'
