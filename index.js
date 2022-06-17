@@ -1,3 +1,9 @@
+/**
+   * Create By Dika Ardnt.
+   * Contact Me on wa.me/6288292024190
+   * Follow https://github.com/DikaArdnt
+*/
+
 require('./config')
 const { default: elainaConnect, useSingleFileAuthState, DisconnectReason, fetchLatestBaileysVersion, generateForwardMessageContent, prepareWAMessageMedia, generateWAMessageFromContent, generateMessageID, downloadContentFromMessage, makeInMemoryStore, jidDecode, proto } = require("@adiwajshing/baileys")
 const { state, saveState } = useSingleFileAuthState(`./${sessionName}.json`)
@@ -65,7 +71,7 @@ async function startelaina() {
     const elaina = elainaConnect({
         logger: pino({ level: 'silent' }),
         printQRInTerminal: true,
-        browser: ['Elaina Multi Device','Safari','1.0.0'],
+        browser: ['e l a i n a ?','Safari','1.0.0'],
         auth: state
     })
 
@@ -76,7 +82,7 @@ async function startelaina() {
     const callerId = json.content[0].attrs['call-creator']
     if (json.content[0].tag == 'offer') {
     let pa7rick = await elaina.sendContact(callerId, global.owner)
-    elaina.sendMessage(callerId, { text: `Sistem otomatis block!\nJangan menelpon bot!\nSilahkan Hubungi Owner Untuk Dibuka !`}, { quoted : pa7rick })
+    elaina.sendMessage(callerId, { text: `Sistem otomatis block!\nJangan menelpon bot!\nSilahkan Hubungi Owner Untuk Membuka Blok Kembali !`}, { quoted : pa7rick })
     await sleep(8000)
     await elaina.updateBlockStatus(callerId, "block")
     }
@@ -105,7 +111,7 @@ async function startelaina() {
        try {
        ppgc = await elaina.profilePictureUrl(pea[0].id, 'image')
        } catch {
-       ppgc = 'https://i0.wp.com/www.gambarunik.id/wp-content/uploads/2019/06/Top-Gambar-Foto-Profil-Kosong-Lucu-Tergokil-.jpg'
+       ppgc = 'https://shortlink.elainaarridho.my.id/rg1oT'
        }
        let wm_fatih = { url : ppgc }
        if (pea[0].announce == true) {
@@ -127,31 +133,29 @@ async function startelaina() {
             let metadata = await elaina.groupMetadata(anu.id)
             let participants = anu.participants
             for (let num of participants) {
-
+                // Get Profile Picture User
                 try {
                     ppuser = await elaina.profilePictureUrl(num, 'image')
                 } catch {
                     ppuser = 'https://i0.wp.com/www.gambarunik.id/wp-content/uploads/2019/06/Top-Gambar-Foto-Profil-Kosong-Lucu-Tergokil-.jpg'
                 }
 
+                // Get Profile Picture Group
                 try {
                     ppgroup = await elaina.profilePictureUrl(anu.id, 'image')
                 } catch {
                     ppgroup = 'https://i0.wp.com/www.gambarunik.id/wp-content/uploads/2019/06/Top-Gambar-Foto-Profil-Kosong-Lucu-Tergokil-.jpg'
                 }
-                
-let nama = await elaina.getName(num)
-memb = metadata.participants.length
 
-Kon = await getBuffer(`https://hardianto.xyz/api/welcome3?profile=${encodeURIComponent(ppuser)}&name=${encodeURIComponent(nama)}&bg=https://telegra.ph/file/045471598515af3cbed67.jpg&namegb=${encodeURIComponent(metadata.subject)}&member=${encodeURIComponent(memb)}`)
-
-Tol = await getBuffer(`https://hardianto.xyz/api/goodbye3?profile=${encodeURIComponent(ppuser)}&name=${encodeURIComponent(nama)}&bg=https://telegra.ph/file/045471598515af3cbed67.jpg&namegb=${encodeURIComponent(metadata.subject)}&member=${encodeURIComponent(memb)}`)
-                 
-                   if (anu.action == 'add') {
-                    elaina.sendMessage(anu.id, { image: { url: ppuser }, contextInfo: { mentionedJid: [num] }, caption: `Welcome @${num.split("@")[0]}` })
+                if (anu.action == 'add') {
+                    elaina.sendMessage(anu.id, { image: { url: ppuser }, mentions: [num], caption: `Welcome @${num.split("@")[0]}` })
                 } else if (anu.action == 'remove') {
-                    elaina.sendMessage(anu.id, { image: { url: ppuser }, contextInfo: { mentionedJid: [num] }, caption: `Bye @${num.split("@")[0]}` })
-                }
+                    elaina.sendMessage(anu.id, { image: { url: ppuser }, mentions: [num], caption: `Byee @${num.split("@")[0]}` })
+                } else if (anu.action == 'promote') {
+                    elaina.sendMessage(anu.id, { image: { url: ppuser }, mentions: [num], caption: `@${num.split('@')[0]} *Got a promotion in:*\n${metadata.subject}` })
+                } else if (anu.action == 'demote') {
+                    elaina.sendMessage(anu.id, { image: { url: ppuser }, mentions: [num], caption: `@${num.split('@')[0]} *Has been demoted in:*\n${metadata.subject}` })
+              }
             }
         } catch (err) {
             console.log(err)
@@ -197,7 +201,7 @@ Tol = await getBuffer(`https://hardianto.xyz/api/goodbye3?profile=${encodeURICom
 	for (let i of kon) {
 	    list.push({
 	    	displayName: await elaina.getName(i + '@s.whatsapp.net'),
-	    	vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await elaina.getName(i + '@s.whatsapp.net')}\nFN:${await elaina.getName(i + '@s.whatsapp.net')}\nitem1.TEL;waid=${i}:${i}\nitem1.X-ABLabel:Harap chat yg sopan\nitem2.EMAIL;type=INTERNET:skylarkaf7@gmail.com\nitem2.X-ABLabel:Email\nitem3.URL:https://instagram.com/skylarkaf_\nitem3.X-ABLabel:Instagram\nitem4.ADR:;;Altar Isekai;;;;\nitem4.X-ABLabel:Region\nEND:VCARD`
+	    	vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await elaina.getName(i + '@s.whatsapp.net')}\nFN:${await elaina.getName(i + '@s.whatsapp.net')}\nitem1.TEL;waid=${i}:${i}\nitem1.X-ABLabel:Ponsel\nitem2.EMAIL;type=INTERNET:okeae2410@gmail.com\nitem2.X-ABLabel:Email\nitem3.URL:https://instagram.com/cak_haho\nitem3.X-ABLabel:Instagram\nitem4.ADR:;;Indonesia;;;;\nitem4.X-ABLabel:Region\nEND:VCARD`
 	    })
 	}
 	elaina.sendMessage(jid, { contacts: { displayName: `${list.length} Kontak`, contacts: list }, ...opts }, { quoted })
@@ -224,23 +228,67 @@ Tol = await getBuffer(`https://hardianto.xyz/api/goodbye3?profile=${encodeURICom
 
     elaina.serializeM = (m) => smsg(elaina, m, store)
 
-     elaina.ev.on('connection.update', async (update) => {
+    elaina.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect } = update	    
         if (connection === 'close') {
-        let reason = new Boom(lastDisconnect?.error)?.output?.statusCode
-            if (reason === DisconnectReason.badSession) { console.log(`Bad Session File, Please Delete Session and Scan Again`); process.exit(); }
-            else if (reason === DisconnectReason.connectionClosed) { console.log("Connection closed, Reconnecting...."); startelaina(); }
-            else if (reason === DisconnectReason.connectionLost) { console.log("Connection Lost from Server, Reconnecting..."); startelaina(); }
-            else if (reason === DisconnectReason.connectionReplaced) { console.log("Connection Replaced, Another New Session Opened, Please Close Current Session First"); process.exit(); }
-            else if (reason === DisconnectReason.loggedOut) { console.log(`Device Logged Out, Please Delete Session And Scan Again.`); process.exit(); }
+        let reason = new Boom(lastDisconnect?.error)?.output.statusCode
+            if (reason === DisconnectReason.badSession) { console.log(`Bad Session File, Please Delete Session and Scan Again`); elaina.logout(); }
+            else if (reason === DisconnectReason.connectionClosed) { console.log("Connection closed, reconnecting...."); startelaina(); }
+            else if (reason === DisconnectReason.connectionLost) { console.log("Connection Lost from Server, reconnecting..."); startelaina(); }
+            else if (reason === DisconnectReason.connectionReplaced) { console.log("Connection Replaced, Another New Session Opened, Please Close Current Session First"); elaina.logout(); }
+            else if (reason === DisconnectReason.loggedOut) { console.log(`Device Logged Out, Please Scan Again And Run.`); elaina.logout(); }
             else if (reason === DisconnectReason.restartRequired) { console.log("Restart Required, Restarting..."); startelaina(); }
             else if (reason === DisconnectReason.timedOut) { console.log("Connection TimedOut, Reconnecting..."); startelaina(); }
-            else { console.log(`Unknown DisconnectReason: ${reason}|${connection}`) }
+            else elaina.end(`Unknown DisconnectReason: ${reason}|${connection}`)
         }
         console.log('Connected...', update)
     })
-    
-    elaina.ev.on('creds.update', saveState)    // Add Other
+
+    elaina.ev.on('creds.update', saveState)
+
+    // Add Other
+      
+      /** Resize Image
+      *
+      * @param {Buffer} Buffer (Only Image)
+      * @param {Numeric} Width
+      * @param {Numeric} Height
+      */
+      elaina.reSize = async (image, width, height) => {
+       let jimp = require('jimp')
+       var oyy = await jimp.read(image);
+       var kiyomasa = await oyy.resize(width, height).getBufferAsync(jimp.MIME_JPEG)
+       return kiyomasa
+      }
+      // Siapa yang cita-citanya pakai resize buat keliatan thumbnailnya
+      
+      /** Send Button 5 Location
+       *
+       * @param {*} jid
+       * @param {*} text
+       * @param {*} footer
+       * @param {*} location
+       * @param [*] button
+       * @param {*} options
+       */
+      elaina.send5ButLoc = async (jid , text = '' , footer = '', lok, but = [], options = {}) =>{
+       let resize = await elaina.reSize(lok, 300, 150)
+       var template = generateWAMessageFromContent(jid, {
+       "templateMessage": {
+       "hydratedTemplate": {
+       "locationMessage": {
+       "degreesLatitude": 0,
+       "degreesLongitude": 0,
+       "jpegThumbnail": resize
+       },
+       "hydratedContentText": text,
+       "hydratedFooterText": footer,
+       "hydratedButtons": but
+       }
+       }
+       }, options)
+       elaina.relayMessage(jid, template.message, { messageId: template.key.id })
+      }
 
       /**
       *
@@ -322,8 +370,9 @@ Tol = await getBuffer(`https://hardianto.xyz/api/goodbye3?profile=${encodeURICom
      * @param {*} options
      * @returns
      */
-    elaina.send5ButImg = async (jid , text = '' , footer = '', img, but = [], options = {}) =>{
-        let message = await prepareWAMessageMedia({ image: img }, { upload: elaina.waUploadToServer })
+    elaina.send5ButImg = async (jid , text = '' , footer = '', img, but = [], buff, options = {}) =>{
+        let resize = await elaina.reSize(buff, 300, 150)
+        let message = await prepareWAMessageMedia({ image: img, jpegThumbnail: resize }, { upload: elaina.waUploadToServer })
         var template = generateWAMessageFromContent(jid, proto.Message.fromObject({
         templateMessage: {
         hydratedTemplate: {
@@ -347,8 +396,9 @@ Tol = await getBuffer(`https://hardianto.xyz/api/goodbye3?profile=${encodeURICom
      * @param {*} options
      * @returns
      */
-    elaina.send5ButVid = async (jid , text = '' , footer = '', vid, but = [], options = {}) =>{
-        let message = await prepareWAMessageMedia({ video: vid }, { upload: elaina.waUploadToServer })
+    elaina.send5ButVid = async (jid , text = '' , footer = '', vid, but = [], buff, options = {}) =>{
+        let resize = await elaina.reSize(buff, 300, 150)
+        let message = await prepareWAMessageMedia({ video: vid, jpegThumbnail: resize }, { upload: elaina.waUploadToServer })
         var template = generateWAMessageFromContent(jid, proto.Message.fromObject({
         templateMessage: {
         hydratedTemplate: {
@@ -372,8 +422,11 @@ Tol = await getBuffer(`https://hardianto.xyz/api/goodbye3?profile=${encodeURICom
      * @param {*} options
      * @returns
      */
-    elaina.send5ButGif = async (jid , text = '' , footer = '', gif, but = [], options = {}) =>{
-        let message = await prepareWAMessageMedia({ video: gif, gifPlayback: true }, { upload: elaina.waUploadToServer })
+    elaina.send5ButGif = async (jid , text = '' , footer = '', gif, but = [], buff, options = {}) =>{
+        let resize = await elaina.reSize(buff, 300, 150)
+        let a = [1,2]
+        let b = a[Math.floor(Math.random() * a.length)]
+        let message = await prepareWAMessageMedia({ video: gif, gifPlayback: true, jpegThumbnail: resize, gifAttribution: b}, { upload: elaina.waUploadToServer })
         var template = generateWAMessageFromContent(jid, proto.Message.fromObject({
         templateMessage: {
         hydratedTemplate: {
@@ -467,7 +520,7 @@ Tol = await getBuffer(`https://hardianto.xyz/api/goodbye3?profile=${encodeURICom
      * @param {*} options 
      * @returns 
      */
-    elaina.sendTextWithMentions = async (jid, text, quoted, options = {}) => elaina.sendMessage(jid, { text: text, contextInfo: { mentionedJid: [...text.matchAll(/@(\d{0,16})/g)].map(v => v[1] + '@s.whatsapp.net') }, ...options }, { quoted })
+    elaina.sendTextWithMentions = async (jid, text, quoted, options = {}) => elaina.sendMessage(jid, { text: text, mentions: [...text.matchAll(/@(\d{0,16})/g)].map(v => v[1] + '@s.whatsapp.net'), ...options }, { quoted })
 
     /**
      * 
