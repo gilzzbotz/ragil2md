@@ -49,9 +49,8 @@ global.limitawal = {
    potionawal: 1
 }
 
-global.gifmp4 = "https://uploader.caliph.my.id/file/yUnMtkqgmU.mp4",
-global.menuimg = "https://uploader.caliph.my.id/file/mNV5rMkeoE.jpg"
-
+global.gifmp4 = "https://uploader.caliph.my.id/file/G3jADVko4M.mp4",
+global.menuimg = "https://uploader.caliph.my.id/file/zQ5899monI.png"
 let file = require.resolve(__filename)
 fs.watchFile(file, () => {
 	fs.unwatchFile(file)
