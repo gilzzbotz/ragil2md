@@ -138,7 +138,7 @@ module.exports = elaina = async (elaina, m, chatUpdate, store) => {
         const from = m.key.remoteJid
         var body = (m.mtype === 'conversation') ? m.message.conversation : (m.mtype == 'imageMessage') ? m.message.imageMessage.caption : (m.mtype == 'videoMessage') ? m.message.videoMessage.caption : (m.mtype == 'extendedTextMessage') ? m.message.extendedTextMessage.text : (m.mtype == 'buttonsResponseMessage') ? m.message.buttonsResponseMessage.selectedButtonId : (m.mtype == 'listResponseMessage') ? m.message.listResponseMessage.singleSelectReply.selectedRowId : (m.mtype == 'templateButtonReplyMessage') ? m.message.templateButtonReplyMessage.selectedId : (m.mtype === 'messageContextInfo') ? (m.message.buttonsResponseMessage?.selectedButtonId || m.message.listResponseMessage?.singleSelectReply.selectedRowId || m.text) : ''
         var budy = (m.xtype === 'conversation' && m.message.conversation) ? m.message.conversation : (m.xtype == 'imageMessage') && m.message.imageMessage.caption ? m.message.imageMessage.caption : (m.xtype == 'videoMessage') && m.message.videoMessage.caption ? m.message.videoMessage.caption : (m.xtype == 'extendedTextMessage') && m.message.extendedTextMessage.text ? m.message.extendedTextMessage.text : ''.slice(1).trim().split(/ +/).shift().toLowerCase()
-        var prefix = /^[簞?Ａ繩?繞??Ｔ瞼簧??=|~!#$%^&.?/\\穢^z+*@,;]/.test(budy) ? budy.match(/^[簞?Ａ繩?繞??Ｔ瞼簧??=|~!#$%^&.?/\\穢^z+*,;]/gi) : '#'
+        var prefix = /^[簞?Ａ繩?繞??Ｔ瞼簧??=|~!#$%^&.?/\\穢^z+*@,;]/.test(budy) ? budy.match(/^[簞?Ａ繩?繞??Ｔ瞼簧??=|~!#$%^&.?/\\穢^z+*,;]/gi) : '.'
         const isCmd = body.startsWith(prefix)
         const command = body.slice(1).trim().split(/ +/).shift().toLowerCase()
         const args = body.trim().split(/ +/).slice(1)
@@ -679,12 +679,16 @@ break
  case 'tqtt': case'tqtq':{
  efhzm =`*Big Thanks To:*
  
+• Adiwajshing
+https://github.com/adiwajshing/baileys
 • DikaArdnt 
 https://github.com/DikaArdnt
+• Fatih
+https://github.com/FatihArridho
 • SkylarKaf
 https://github.com/SkylarKaf
 • Deff
-https://github.com/DEFF1602`
+https://github.com/DEFF-Y`
 reply(efhzm)}
    break
    case 'ping': case 'speed': {
@@ -1385,7 +1389,7 @@ let teks = ` *[ TAG ALL]*
  
  *⸙ Message :* \n\n${q ? q : 'Blank'}\n\n`
                 for (let mem of participants) {
-                teks += `⭔ @${mem.id.split('@')[0]}\n`
+                teks += `> @${mem.id.split('@')[0]}\n`
                 }
                 elaina.sendMessage(m.chat, { text: teks, mentions: participants.map(a => a.id) }, { quoted: m })
                 }
@@ -1652,7 +1656,7 @@ case 'linkgroup': case 'linkgc': {
                     if (!isBotAdmins) throw mess.botAdmin
                     let id = args && /\d+\-\d+@g.us/.test(args[0]) ? args[0] : m.chat
                     let online = [...Object.keys(store.presences[id]), botNumber]
-                    elaina.sendText(m.chat, 'List Online:\n\n' + online.map(v => '⭔ @' + v.replace(/@.+/, '')).join`\n`, m, { mentions: online })
+                    elaina.sendText(m.chat, 'List Online:\n\n' + online.map(v => '> @' + v.replace(/@.+/, '')).join`\n`, m, { mentions: online })
              }
              break
 //═══════════[Owner Menu
@@ -1678,7 +1682,7 @@ case 'react': {
                if (!text) throw `Contoh : ${prefix + command} packname|author`
           global.packname = text.split("|")[0]
           global.author = text.split("|")[1]
-          reply(`Exif berhasil diubah menjadi\n\n⭔ Packname : ${global.packname}\n⭔ Author : ${global.author}`)
+          reply(`Exif berhasil diubah menjadi\n\n> Packname : ${global.packname}\n> Author : ${global.author}`)
             }
             break         	
 case 'block': {
@@ -1712,8 +1716,8 @@ case 'block': {
                     let read = i.readTimestamp
                     let unread = i.receiptTimestamp
                     let waktu = read ? read : unread
-                    teks += `⭔ @${i.userJid.split('@')[0]}\n`
-                    teks += ` ┗━⭔ *Waktu :* ${moment(waktu * 1000).format('DD/MM/YY HH:mm:ss')} ⭔ *Status :* ${read ? 'Dibaca' : 'Terkirim'}\n\n`
+                    teks += `> @${i.userJid.split('@')[0]}\n`
+                    teks += ` ┗━> *Waktu :* ${moment(waktu * 1000).format('DD/MM/YY HH:mm:ss')} > *Status :* ${read ? 'Dibaca' : 'Terkirim'}\n\n`
                 }
                 elaina.sendTextWithMentions(m.chat, teks, m)
             }
@@ -1780,7 +1784,7 @@ case 'bcgc': case 'bcgroup': {
                 }
             }
             break                  
-            case 'stickerwm': case 'swm': case 'stickergifwm': case 'sgifwm': {
+            case 'stickerwm': case 'swm': case 'stickergifwm': case 'wm': {
                 if (!quoted) throw `Balas Video/Image Dengan Caption ${prefix + command} teks1|teks2`
                 let [teks1, teks2] = text.split`|`
                 if (!teks1) throw `Kirim/reply image/video dengan caption ${prefix + command} teks1|teks2`
@@ -1987,9 +1991,9 @@ case 'google': {
                 google({'query': text}).then(res => {
                 let teks = `Google Search From : ${text}\n\n`
                 for (let g of res) {
-                teks += `⭔ *Title* : ${g.title}\n`
-                teks += `⭔ *Description* : ${g.snippet}\n`
-                teks += `⭔ *Link* : ${g.link}\n\n────────────────────────\n\n`
+                teks += `> *Title* : ${g.title}\n`
+                teks += `> *Description* : ${g.snippet}\n`
+                teks += `> *Link* : ${g.link}\n\n────────────────────────\n\n`
                 } 
                 reply(teks)
                 })
@@ -2002,7 +2006,7 @@ case 'google': {
                 let teks = 'YouTube Search\n\n Result From '+text+'\n\n'
                 let no = 1
                 for (let i of search.all) {
-                    teks += `⭔ No : ${no++}\n⭔ Type : ${i.type}\n⭔ Video ID : ${i.videoId}\n⭔ Title : ${i.title}\n⭔ Views : ${i.views}\n⭔ Duration : ${i.timestamp}\n⭔ Upload At : ${i.ago}\n⭔ Author : ${i.author.name}\n⭔ Url : ${i.url}\n\n─────────────────\n\n`
+                    teks += `> No : ${no++}\n> Type : ${i.type}\n> Video ID : ${i.videoId}\n> Title : ${i.title}\n> Views : ${i.views}\n> Duration : ${i.timestamp}\n> Upload At : ${i.ago}\n> Author : ${i.author.name}\n> Url : ${i.url}\n\n─────────────────\n\n`
                 }
                 elaina.sendMessage(m.chat, { image: { url: search.all[0].thumbnail },  caption: teks }, { quoted: m })
             }
@@ -2040,7 +2044,7 @@ case 'wallpaper': {
                 ]
                 let buttonMessage = {
                     image: { url: result.image[0] },
-                    caption: `⭔ Title : ${result.title}\n⭔ Category : ${result.type}\n⭔ Detail : ${result.source}\n⭔ Media Url : ${result.image[2] || result.image[1] || result.image[0]}`,
+                    caption: `> Title : ${result.title}\n> Category : ${result.type}\n> Detail : ${result.source}\n> Media Url : ${result.image[2] || result.image[1] || result.image[0]}`,
                     footer: elaina.user.name,
                     buttons: buttons,
                     headerType: 4
@@ -2059,7 +2063,7 @@ case 'wallpaper': {
                 ]
                 let buttonMessage = {
                     image: { url: result.image },
-                    caption: `⭔ Title : ${result.title}\n⭔ Source : ${result.source}\n⭔ Media Url : ${result.image}`,
+                    caption: `> Title : ${result.title}\n> Source : ${result.source}\n> Media Url : ${result.image}`,
                     footer: elaina.user.name,
                     buttons: buttons,
                     headerType: 4
@@ -2077,7 +2081,7 @@ case 'wallpaper': {
                 ]
                 let buttonMessage = {
                     image: { url: result },
-                    caption: `⭔ Result from : ${text}\n\n*Klik Next Untuk Melanjutkan*`,
+                    caption: `> Result from : ${text}\n\n*Klik Next Untuk Melanjutkan*`,
                     footer: elaina.user.name,
                     buttons: buttons,
                     headerType: 4
@@ -2104,12 +2108,12 @@ ${anu.title}
 *• Description:*
 ${anu.description}
 
-⭔ Ext: Search
-⭔ ID: ${anu.videoId}
-⭔ Duration: ${anu.timestamp}
-⭔ Viewers: ${anu.views}
-⭔ Uploaded: ${anu.ago}
-⭔ Author: ${anu.author.name}`
+> Ext: Search
+> ID: ${anu.videoId}
+> Duration: ${anu.timestamp}
+> Viewers: ${anu.views}
+> Uploaded: ${anu.ago}
+> Author: ${anu.author.name}`
 const gambart = await getBuffer(anu.thumbnail)
 const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
@@ -2117,7 +2121,7 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
            hydratedContentText: jembud,
            locationMessage: { 
            jpegThumbnail: await reSize(gambart, 300, 300)},
-           hydratedFooterText: `Silahkan Pilih type yg sesuai`,
+           hydratedFooterText: `Silahkan Pilih type media yg sesuai`,
            hydratedButtons: [
                              { urlButton: { displayText: 'Url', url: `${anu.url}` } },
                              { urlButton: { displayText: 'Channel', url: `${anu.author.url}` } }, 
@@ -2139,62 +2143,9 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
                 let quality = args[1] ? args[1] : '360p'
                 let media = await ytv(text, quality)
                 if (media.filesize >= 999999) return reply('Video size is too big '+util.format(media))
-                elaina.sendMessage(m.chat, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: `${media.title}.mp4`, caption: `⭔ Title : ${media.title}\n⭔ File Size : ${media.filesizeF}\n⭔ Ext : MP4\n⭔ Resololution : ${args[1] || '360p'}` }, { quoted: m })
+                elaina.sendMessage(m.chat, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: `${media.title}.mp4`, caption: `> Title : ${media.title}\n> File Size : ${media.filesizeF}\n> Ext : MP4\n> Resololution : ${args[1] || '360p'}` }, { quoted: m })
             }
-            break
-
-               //kalo kalian suka ori hapus aja ini
-               /*case 'ytmp4': case 'ytvideo': {
-                let { ytv } = require('./lib/y2mate')
-                let quality = args[1] ? args[1] : '360p'
-                let media = await ytv(text, quality)
-               if (!text) throw `Contoh : ${prefix + command} https://youtu.be/Cv1Sc4sep9k`                                                                                    
-         jembud = `⭔ Title : ${media.title}
-⭔ Ext : MP4`           
-let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uploader.caliph.my.id/file/kBXJ9OOD0M.jpg`)}, { upload: elaina.waUploadToServer })
-    template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
-           templateMessage: {
-                hydratedTemplate: {
-                     imageMessage: message.imageMessage,
-                          hydratedContentText: `*• Pilih Opsi Resolusi*`,
-                            hydratedFooterText: jembud,
-                             hydratedButtons: [{                                
-                              urlButton: {
-                                    displayText: 'Url',
-                                    url: `${isUrl(text)}`
-                                }
-                            }, {
-                                quickReplyButton: {
-                                    displayText: '240px',
-                                    id: `${prefix}ytress ${isUrl(text)} 240p`
-                                    }
-                            }, {
-                                quickReplyButton: {
-                                    displayText: '360px',
-                                    id: `${prefix}ytress ${isUrl(text)} 360p`
-                                    }
-                            }, {
-                                 quickReplyButton: {
-                                    displayText: '720px',
-                                    id: `${prefix}ytress ${isUrl(text)} 720p`
-                                    }
-                            }]
-                        }
-                    }
-                }), { userJid: m.chat, quoted: m })
-                  elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
-            }
-            break
-            case 'ytress':{
-                let { ytv } = require('./lib/y2mate')
-                let quality = args[1] ? args[1] : '360p'
-                let media = await ytv(text, quality)
-                if (media.filesize >= 999999) return reply('Video size is too big '+util.format(media))
-                elaina.sendMessage(m.chat, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: `${media.title}.mp4`, caption: `Result` }, { quoted: m })
-            }
-            break*/
-            
-                          
+            break                                    
             case 'ytmp3': case 'ytaudio': {
                 let { yta } = require('./lib/y2mate')
                 if (!text) throw `Contoh : ${prefix + command} https://youtu.be/Cv1Sc4sep9k 320kbps`
@@ -2267,7 +2218,7 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
                 let quality = args[1] ? args[1] : '128kbps'
                 let media = await yta(urls[text - 1], quality)
                 if (media.filesize >= 100000) return reply('File Melebihi Batas '+util.format(media))
-                elaina.sendImage(m.chat, media.thumb, `⭔ Title : ${media.title}\n⭔ File Size : ${media.filesizeF}\n⭔ Url : ${urls[text - 1]}\n⭔ Ext : MP3\n⭔ Resolusi : ${args[1] || '128kbps'}`, m)
+                elaina.sendImage(m.chat, media.thumb, `> Title : ${media.title}\n> File Size : ${media.filesizeF}\n> Url : ${urls[text - 1]}\n> Ext : MP3\n> Resolusi : ${args[1] || '128kbps'}`, m)
                 elaina.sendMessage(m.chat, { audio: { url: media.dl_link }, mimetype: 'audio/mpeg', fileName: `${media.title}.mp3` }, { quoted: m })
             }
             break
@@ -2281,7 +2232,7 @@ let message = await prepareWAMessageMedia({ image: await getBuffer(`https://uplo
                 let quality = args[1] ? args[1] : '360p'
                 let media = await ytv(urls[text - 1], quality)
                 if (media.filesize >= 100000) return reply('File Melebihi Batas '+util.format(media))
-                elaina.sendMessage(m.chat, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: `${media.title}.mp4`, caption: `⭔ Title : ${media.title}\n⭔ File Size : ${media.filesizeF}\n⭔ Url : ${urls[text - 1]}\n⭔ Ext : MP3\n⭔ Resolusi : ${args[1] || '360p'}` }, { quoted: m })
+                elaina.sendMessage(m.chat, { video: { url: media.dl_link }, mimetype: 'video/mp4', fileName: `${media.title}.mp4`, caption: `> Title : ${media.title}\n> File Size : ${media.filesizeF}\n> Url : ${urls[text - 1]}\n> Ext : MP3\n> Resolusi : ${args[1] || '360p'}` }, { quoted: m })
             }
             break
             case 'tiktok': case'tiktoknowm': case 'ttdownload':{
@@ -2413,7 +2364,34 @@ Lihat list Pesan Dengan ${prefix}listmsg`)
 		reply(`Berhasil menghapus '${text}' dari list pesan`)
             }
 	    break	   
+//═══════════[ Api menu
 
+case 'neon': case 'snowtext': case 'cloudtext': case '3dluxury': case '3dgradient': case 'blackpink': case 'realisticvintage': case 'realisticloud': case 'cloudsky': case 'sandsummerbeach': case 'sandwriting': case 'sandengraved': case 'ballontext': case '3dglue': case 'space3d': case 'metaldarkgold': case 'glitch': case 'neongalaxy': case '1917text': case 'minion3d': case 'holographic3d': case 'metalpurple': case 'duluxesilver': case 'bluemetal': case 'duluxegold': case 'glossycarbon': case 'febric': case 'stone': case 'pornhub': case '3davengers': case 'marvelstudios': case 'marvel': case 'happynewyear': case 'newyear3d': case 'neontext': case 'darkgoldeffect': case 'hollowenfire': case 'bloodtext': case 'xmas3d': case '3dmetalsilver': case '3drosegold': case '3dmetalgold': case '3dmetalgalaxy': case 'lionlogo': case 'wolflogoblack': case 'wolflogogalaxy': case 'ninjalogo': case 'jokerlogo': case 'wicker': case 'naturalleaves': case 'fireworksparkle': case 'skeleton': case 'redfoilballon': case 'purplefoilballon': case 'pinkfoilballon': case 'greenfoilballon': case 'cyanfoilballon': case 'bluefoilballon': case 'goldfoilballon': case 'steel': case 'ultragloss': case 'denim': case 'decorategreen': case 'decoratepurple': case 'peridotstone': case 'rock': case 'lava': case 'yellowglass': case 'purpleglass': case 'orangeglass': case 'greenglass': case 'blueglass': case 'redglass': case 'purpleshinyglass': case 'captainamerica': case 'robotr2d2': case 'toxic': case 'rainbowequalizier': {
+                if (!text) throw `Example : ${prefix + command} text`
+                reply(mess.wait)
+                anu = await getBuffer(`https://xteam.xyz/textpro/${command}?text=${text}&APIKEY=apivproject`)
+                elaina.sendMessage(m.chat, { image: anu, caption: `Text Pro ${command}` }, { quoted: m}).catch((err) => m.reply('Maaf server Xteam sedang down'))
+	            }
+                break             
+case 'darkjoke':{    
+                reply(mess.wait)
+                anu = await getBuffer(`https://api.xteam.xyz/asupan/darkjoke?APIKEY=apivproject`)
+                elaina.sendMessage(m.chat, { image: anu, caption: `Beliau ini....` }, { quoted: m}).catch((err) => m.reply('Maaf server Xteam sedang down'))
+	            }
+                break
+case 'meme':{    
+                reply(mess.wait)
+                anu = await getBuffer(`https://api.xteam.xyz/randomimage/meme?APIKEY=apivproject`)
+                elaina.sendMessage(m.chat, { image: anu, caption: `Bilek` }, { quoted: m}).catch((err) => m.reply('Maaf server Xteam sedang down'))
+	            }
+                break
+case 'meme2':{    
+                reply(mess.wait)
+                anu = await getBuffer(`https://api.xteam.xyz/randomimage/meme2?APIKEY=apivproject`)
+                elaina.sendMessage(m.chat, { image: anu, caption: `bilek` }, { quoted: m}).catch((err) => m.reply('Maaf server Xteam sedang down'))
+	            }
+                break
+                
 //═══════════[Display
 
 case 'tes': case 'test': case 'statusbot': case 'bot': case 'status':{
@@ -2445,9 +2423,10 @@ case 'menu': case 'help':{
 │• AuthorBase: DikaArdnt
 ├───⭓「 About 」
 │ ⫹⫺ Library: Baileys-Md
-│ ⫹⫺ Language : Javascript
+│ ⫹⫺ Language: Javascript
+│ ⫹⫺ Prefix: AllText-Prefixes 
 │ ⫹⫺ HostName: ${os.hostname()}
-│ ⫹⫺ Platform : ${os.platform()}
+│ ⫹⫺ Platform: ${os.platform()}
 │ ⫹⫺ TotalUser: ${Object.keys(global.db.data.users).length}
 ╰──────⭓`
 let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4), gifPlayback: true, gifAttribution: "GIPHY" }, { upload: elaina.waUploadToServer })
@@ -2472,10 +2451,10 @@ let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4
    break
    case 'allmenu': {
   	
-  sxs = `⭔ Don't forget to donate :)`
+  sxs = `⭔ Powered by nhentai.net`
   anu = `*• All Menu*
   
-  *[ 🔎 ]  Searching*  
+ *[ 🔎 ] Searching*  
  > ${prefix}play [query]
  > ${prefix}google [query]
  > ${prefix}pinterest [query]
@@ -2485,7 +2464,7 @@ let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4
  > ${prefix}ringtone [query]
  > ${prefix}ppcp
   
-  *[ 📍 ]  Groub Menu*  
+ *[ 📍 ] Groub Menu*  
  > ${prefix}add @user
  > ${prefix}kick @user
  > ${prefix}promote @user
@@ -2498,7 +2477,7 @@ let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4
  > ${prefix}editinfo [option]
  > ${prefix}grupinfo
   
-  *[ 📥 ]  Downloader*  
+ *[ 📥 ] Downloader*  
  > ${prefix}instagram [url]
  > ${prefix}igs [query]
  > ${prefix}tiktok [url]
@@ -2508,7 +2487,7 @@ let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4
  > ${prefix}getmusic [query]
  > ${prefix}getvideo [query
   
-  *[ ♻️ ]  Converter*  
+ *[ ♻️ ] Converter*  
  > ${prefix}attp
  > ${prefix}ttp
  > ${prefix}sticker
@@ -2534,8 +2513,88 @@ let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4
  > ${prefix}robot
  > ${prefix}slow
  > ${prefix}squirrel
+ 
+ *[ 📝 ] Texpro*              
+ > ${prefix}neon
+ > ${prefix}snowtext
+ > ${prefix}cloudtext
+ > ${prefix}3dluxury
+ > ${prefix}3dgradient
+ > ${prefix}blackpink
+ > ${prefix}realisticvintage
+ > ${prefix}realisticloud
+ > ${prefix}cloudsky
+ > ${prefix}sandsummerbeach
+ > ${prefix}sandwriting
+ > ${prefix}sandengraved
+ > ${prefix}ballontext
+ > ${prefix}3dglue
+ > ${prefix}space3d
+ > ${prefix}metaldarkgold
+ > ${prefix}glitch
+ > ${prefix}neongalaxy
+ > ${prefix}1917text
+ > ${prefix}minion3d
+ > ${prefix}holographic3d
+ > ${prefix}metalpurple
+ > ${prefix}duluxesilver
+ > ${prefix}bluemetal
+ > ${prefix}duluxegold
+ > ${prefix}glossycarbon
+ > ${prefix}febric
+ > ${prefix}stone
+ > ${prefix}pornhub
+ > ${prefix}3davengers
+ > ${prefix}marvelstudios
+ > ${prefix}marvel
+ > ${prefix}happynewyear
+ > ${prefix}newyear3d
+ > ${prefix}neontext
+ > ${prefix}darkgoldeffect
+ > ${prefix}hollowenfire
+ > ${prefix}bloodtext
+ > ${prefix}xmas3d
+ > ${prefix}3dmetalsilver
+ > ${prefix}3drosegold
+ > ${prefix}3dmetalgold
+ > ${prefix}3dmetalgalaxy
+ > ${prefix}lionlogo
+ > ${prefix}wolflogoblack
+ > ${prefix}wolflogogalaxy
+ > ${prefix}ninjalogo
+ > ${prefix}jokerlogo
+ > ${prefix}wicker
+ > ${prefix}naturalleaves
+ > ${prefix}fireworksparkle
+ > ${prefix}skeleton
+ > ${prefix}redfoilballon
+ > ${prefix}purplefoilballon
+ > ${prefix}pinkfoilballon
+ > ${prefix}greenfoilballon
+ > ${prefix}cyanfoilballon
+ > ${prefix}bluefoilballon
+ > ${prefix}goldfoilballon
+ > ${prefix}steel
+ > ${prefix}ultragloss
+ > ${prefix}denim
+ > ${prefix}decorategreen
+ > ${prefix}decoratepurple
+ > ${prefix}peridotstone
+ > ${prefix}rock
+ > ${prefix}lava
+ > ${prefix}yellowglass
+ > ${prefix}purpleglass
+ > ${prefix}orangeglass
+ > ${prefix}greenglass
+ > ${prefix}blueglass
+ > ${prefix}redglass
+ > ${prefix}purpleshinyglass
+ > ${prefix}captainamerica
+ > ${prefix}robotr2d2
+ > ${prefix}toxic
+ > ${prefix}rainbowequalizier
   
-  *[ 🇯🇵 ] Anime Menu*
+ *[ 🇯🇵 ] Anime Menu*
  > ${prefix}loli
  > ${prefix}bully
  > ${prefix}cuddle
@@ -2564,7 +2623,7 @@ let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4
  > ${prefix}dance
  > ${prefix}cringe
   
-  *[ ⚔ ]  Rpg Games*  
+ *[ ⚔ ] Mini Games*  
  > ${prefix}inventory
  > ${prefix}leaderboard
  > ${prefix}mining
@@ -2572,19 +2631,22 @@ let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4
  > ${prefix}sell
  > ${prefix}heal
  > ${prefix}berburu
-  
-  *[ 🎲 ] Fun Menu*
- > ${prefix}apakah
- > ${prefix}kapankah
- > ${prefix}bisakah
- > ${prefix}rate
- > ${prefix}family100
  > ${prefix}tebak [option]
  > ${prefix}math [option]
  > ${prefix}tictactoe
  > ${prefix}suitpvp
+ > ${prefix}family100
+  
+ *[ 🎲 ] Fun Menu*
+ > ${prefix}apakah
+ > ${prefix}kapankah
+ > ${prefix}bisakah
+ > ${prefix}rate
+ > ${prefix}darkjoke
+ > ${prefix}meme
+ > ${prefix}meme2
 
-  *[ 📌 ]  Other Menu*
+ *[ 📌 ] Other Menu*
  > ${prefix}ping
  > ${prefix}owner
  > ${prefix}sewa
@@ -2599,7 +2661,7 @@ let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4
  > ${prefix}listonline
  > ${prefix}report (report bug to owner)
   
-  *[ 🖇 ]  Database* 
+ *[ 🖇 ] Database* 
  > ${prefix}setcmd
  > ${prefix}delcmd
  > ${prefix}listcmd
@@ -2609,7 +2671,7 @@ let message = await prepareWAMessageMedia({ video: await getBuffer(global.gifmp4
  > ${prefix}getmsg
  > ${prefix}delmsg
   
-  *[ 👑 ]  Owner Menu*
+ *[ 👑 ] Owner Menu*
  > ${prefix}chat [option]
  > ${prefix}enters [link]
  > ${prefix}react
@@ -2642,14 +2704,13 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
 case 'command': case 'listmenu':{
     timestampe = speed();
          latensie = speed() - timestampe
-let crp = `• Runtime: ${runtime(process.uptime())}`
-
-let sks = ` *╭───「 Status 」*
+let fkontak = { key: { fromMe: false, participant: `0@s.whatsapp.net`, ...(m.chat ? { remoteJid: "status@broadcast" } : {})}, message: { "contactMessage":{"displayName": ` @skylarkaf_`,"vcard":`BEGIN:VCARD\nVERSION:3.0\nN:2;conn;;;\nFN:SkylarKaf\nitem1.TEL;waid=6282331660134:6282331660134\nitem1.X-ABLabel:Mobile\nEND:VCARD` }}}                
+let crp = `  Powered by nhentai.net`
+let sks = ` *╭─「 List Menu 」*
  *│* • HostName: ${os.hostname()}
  *│* • Platform: ${os.platform()}
  *│* • TotalUser: ${Object.keys(global.db.data.users).length}
- *│* • ServerTime: ${time}
- *├──「 IndoTime 」*
+ *├─「 IndoTime 」*
  *│* • Wit: ${wit}
  *│* • Wita: ${wita}
  *│* • Wib: ${wib}
@@ -2696,15 +2757,20 @@ let template = await generateWAMessageFromContent(m.chat, proto.Message.fromObje
 										"description": "Menampilkan List Menu Converter",
 										"rowId": `${prefix}convertmenu`
 										},
+											{
+											"title": "Textpro Menu",
+										"description": "Menampilkan List Menu Textpro",
+										"rowId": `${prefix}textpromenu`
+										},
 									    {
 											"title": "Anime Menu",
 										"description": "Menampilkan List Menu Anime!",
 										"rowId": `${prefix}animemenu`
 										},		
 										{
-											"title": "Rpg Games",
-										"description": "Menampilkan List Menu Rpg (Stil devsec)",
-										"rowId": `${prefix}rpggames`
+											"title": "Mini Games",
+										"description": "Menampilkan List Menu Game (Stil devsec)",
+										"rowId": `${prefix}games`
 										},																
 										{
 											"title": "Fun Menu",
@@ -2751,8 +2817,8 @@ let template = await generateWAMessageFromContent(m.chat, proto.Message.fromObje
             }
             break
             case 'searchmenu': case 'searching': {
-              	sxs = `⭔ Don't forget to donate :)`
-	            anu = `  *[ 🔍 ] Searching*	            
+              	sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ 🔍 ] Searching*	            
  > ${prefix}play [query]
  > ${prefix}google [query]
  > ${prefix}pinterest [query]
@@ -2781,8 +2847,8 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
                 }
           break   
             case 'groubmenu': case 'grupmenu': {
-            	sxs = `⭔ Don't forget to donate :)`
-	            anu = `  *[ 📍 ]  Groub Menu*             
+            	sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ 📍 ] Groub Menu*             
  > ${prefix}add @user
  > ${prefix}kick @user
  > ${prefix}promote @user
@@ -2814,8 +2880,8 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
                 }
           break   
             case 'downloadmenu': case 'downloadermenu': {
-                sxs = `⭔ Don't forget to donate :)`
-	            anu = `  *[ 📥 ]  Downloader*              
+                sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ 📥 ] Downloader*              
  > ${prefix}instagram [url]
  > ${prefix}igs [query]
  > ${prefix}tiktok [url]
@@ -2844,8 +2910,8 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
                 }
           break   
             case 'convertmenu': case 'convertermenu': {
-                sxs = `⭔ Don't forget to donate :)`
-	            anu = `  *[ ♻️ ]  Converter*                
+                sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ ♻️ ] Converter*                
  > ${prefix}attp
  > ${prefix}ttp
  > ${prefix}sticker
@@ -2890,9 +2956,109 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
                 }
           break   
+            case 'textpro': case 'textpromenu': {
+                sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ 📝 ] Texpro*              
+ > ${prefix}neon
+ > ${prefix}snowtext
+ > ${prefix}cloudtext
+ > ${prefix}3dluxury
+ > ${prefix}3dgradient
+ > ${prefix}blackpink
+ > ${prefix}realisticvintage
+ > ${prefix}realisticloud
+ > ${prefix}cloudsky
+ > ${prefix}sandsummerbeach
+ > ${prefix}sandwriting
+ > ${prefix}sandengraved
+ > ${prefix}ballontext
+ > ${prefix}3dglue
+ > ${prefix}space3d
+ > ${prefix}metaldarkgold
+ > ${prefix}glitch
+ > ${prefix}neongalaxy
+ > ${prefix}1917text
+ > ${prefix}minion3d
+ > ${prefix}holographic3d
+ > ${prefix}metalpurple
+ > ${prefix}duluxesilver
+ > ${prefix}bluemetal
+ > ${prefix}duluxegold
+ > ${prefix}glossycarbon
+ > ${prefix}febric
+ > ${prefix}stone
+ > ${prefix}pornhub
+ > ${prefix}3davengers
+ > ${prefix}marvelstudios
+ > ${prefix}marvel
+ > ${prefix}happynewyear
+ > ${prefix}newyear3d
+ > ${prefix}neontext
+ > ${prefix}darkgoldeffect
+ > ${prefix}hollowenfire
+ > ${prefix}bloodtext
+ > ${prefix}xmas3d
+ > ${prefix}3dmetalsilver
+ > ${prefix}3drosegold
+ > ${prefix}3dmetalgold
+ > ${prefix}3dmetalgalaxy
+ > ${prefix}lionlogo
+ > ${prefix}wolflogoblack
+ > ${prefix}wolflogogalaxy
+ > ${prefix}ninjalogo
+ > ${prefix}jokerlogo
+ > ${prefix}wicker
+ > ${prefix}naturalleaves
+ > ${prefix}fireworksparkle
+ > ${prefix}skeleton
+ > ${prefix}redfoilballon
+ > ${prefix}purplefoilballon
+ > ${prefix}pinkfoilballon
+ > ${prefix}greenfoilballon
+ > ${prefix}cyanfoilballon
+ > ${prefix}bluefoilballon
+ > ${prefix}goldfoilballon
+ > ${prefix}steel
+ > ${prefix}ultragloss
+ > ${prefix}denim
+ > ${prefix}decorategreen
+ > ${prefix}decoratepurple
+ > ${prefix}peridotstone
+ > ${prefix}rock
+ > ${prefix}lava
+ > ${prefix}yellowglass
+ > ${prefix}purpleglass
+ > ${prefix}orangeglass
+ > ${prefix}greenglass
+ > ${prefix}blueglass
+ > ${prefix}redglass
+ > ${prefix}purpleshinyglass
+ > ${prefix}captainamerica
+ > ${prefix}robotr2d2
+ > ${prefix}toxic
+ > ${prefix}rainbowequalizier`
+let gambar = await getBuffer(global.menuimg)
+const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+     templateMessage: {
+         hydratedTemplate: {
+           hydratedContentText: anu,
+           locationMessage: { 
+           jpegThumbnail: await reSize(gambar, 300, 300)},
+           hydratedFooterText: sxs,
+           hydratedButtons: [
+                  { urlButton: { displayText: 'Profile', url: 'https://s.id/Skylarkaf' } },
+                  { quickReplyButton: { displayText: 'Owner', id: `${prefix}owner` } }, 
+                  { quickReplyButton: { displayText: 'List', id: `${prefix}listmenu` } },
+                      ]                                    
+                        }
+                    }
+                }), { userJid: m.chat })
+                elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
+                }
+          break   
             case 'animemenu': {
-            	sxs = `⭔ Don't forget to donate :)`
-	            anu = `  *[ 🇯🇵 ] Anime Menu*      
+            	sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ 🇯🇵 ] Anime Menu*      
  > ${prefix}loli
  > ${prefix}bully
  > ${prefix}cuddle
@@ -2939,16 +3105,17 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
                 elaina.relayMessage(m.chat, template.message, { messageId: template.key.id })
                 }
           break   
-             case 'rpggames': case 'rpgmenu': {
-                sxs = `⭔ Don't forget to donate :)`
-	            anu = `  *[ ⚔ ]  Rpg Games*              
+             case 'games': case 'gamesmenu': {
+                sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ ⚔ ] Mini Games*              
  > ${prefix}inventory
  > ${prefix}leaderboard
  > ${prefix}mining
  > ${prefix}buy
  > ${prefix}sell
  > ${prefix}heal
- > ${prefix}berburu`
+ > ${prefix}berburu
+ > ${prefix}family100`
 let gambar = await getBuffer(global.menuimg)
 const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
@@ -2969,17 +3136,15 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
                 }
           break   
             case 'funmenu': {
-            sxs = `⭔ Don't forget to donate :)`
-	            anu = `  *[ 🎲 ]  Fun Menu* 
+            sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ 🎲 ] Fun Menu* 
  > ${prefix}apakah
  > ${prefix}kapankah
  > ${prefix}bisakah
  > ${prefix}rate
- > ${prefix}family100
- > ${prefix}tebak [option]
- > ${prefix}math [option]
- > ${prefix}tictactoe
- > ${prefix}suitpvp`
+ > ${prefix}darkjoke
+ > ${prefix}meme
+ > ${prefix}meme2`
 let gambar = await getBuffer(global.menuimg)
 const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
      templateMessage: {
@@ -3000,8 +3165,8 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
                 }
           break   
             case 'othermenu': {
-            	sxs = `⭔ Don't forget to donate :)`
-	            anu = `  *[ 📌 ]  Other Menu*           
+            	sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ 📌 ] Other Menu*           
  > ${prefix}ping
  > ${prefix}owner
  > ${prefix}sewa
@@ -3034,8 +3199,8 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
                 }
           break   
             case 'databasemenu': {
-            	sxs = `⭔ Don't forget to donate :)`
-	            anu = `  *[ 🖇 ]  Database*        
+            	sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ 🖇 ] Database*        
  > ${prefix}setcmd
  > ${prefix}delcmd
  > ${prefix}listcmd
@@ -3064,8 +3229,8 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
                 }
           break   
             case 'ownermenu': {
-            	sxs = `⭔ Don't forget to donate :)`
-	            anu = `  *[ 👑 ]  Owner Menu*     
+            	sxs = `⭔ Powered by nhentai.net`
+	            anu = ` *[ 👑 ] Owner Menu*     
  > ${prefix}chat [option]
  > ${prefix}enters [link]
  > ${prefix}react
