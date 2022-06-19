@@ -661,7 +661,7 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
             }
             break
    case 'sc': case 'script': case 'sourcecode':{
-            reply('*• Script Base Original:*\nhttps://github.com/DikaArdnt/elaina-Morou\n\n*• Edited Script:*\nhttps://github.com/SkylarKaf/Elaina-MD\n\nDont Forget Give Star :)')
+            reply('*• Script Base Original:*\nhttps://github.com/DikaArdnt/Hisoka-Morou\n\n*• Edited Script:*\nhttps://github.com/SkylarKaf/Elaina-md\n\nDont Forget Give Star :)')
             }
             break
    case 'donate': case 'donasi':{
