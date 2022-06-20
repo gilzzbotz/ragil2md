@@ -2,10 +2,10 @@
 Jika Fitur Api error Kemungkinan Apikey expired kalian bisa buat apikey sendiri di [`Xteam`](https://xteam.xyz/)
 <br>
 
-Original : [`DikaArdnt/Hisoka-Morou`](https://github.com/DikaArdnt/Hisoka-Morou)
-
 ### NOTE
 This Script is for everyone, not for Sale!, Ngeyel? jahanam menunggumu
+
+Original : [`DikaArdnt/Hisoka-Morou`](https://github.com/DikaArdnt/Hisoka-Morou)
 
 <p align="center">
 	<img src="https://uploader.caliph.my.id/file/w0m1ySSpfo.jpg" width="35%" style="margin-left: auto;margin-right: auto;display: block;">
