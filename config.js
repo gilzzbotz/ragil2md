@@ -15,8 +15,8 @@ global.APIKeys = {
 }
 
 // Other
-global.owner = ['6281357580863','6281357580863','6281357580863','6281357580863']
-global.premium = ['6281357580863']
+global.owner = ['6285730794089']
+global.premium = ['6285730794089']
 global.botnma = 'Gilzz - MD'
 global.ownernma = 'GilzzOFC'
 global.packname = '' 
