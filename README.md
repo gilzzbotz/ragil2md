@@ -1,5 +1,6 @@
 ### INFO 
-Sc nya masih jalan bg, ga sengaja ku priv kemarin 😅
+Jika Fitur Api error Kemungkinan Apikey expired kalian bisa buat apikey sendiri di [`Xteam`](https://xteam.xyz/)
+<br>
 
 Original : [`DikaArdnt/Hisoka-Morou`](https://github.com/DikaArdnt/Hisoka-Morou)
 
@@ -45,7 +46,7 @@ apt install git -y
 apt install nodejs -y
 apt install ffmpeg -y
 git clone https://github.com/SkylarKaf/Elaina-md
-cd Elaina-MD
+cd Elaina-md
 npm install
 ```
 </details>
@@ -58,6 +59,7 @@ $ node .
 ## ❗ Warning
 WhatsApp bot is still in the development stage, so there are a few bugs
 WhatsApp Connection (BETA, not working perfectly)
+
 
 Editing Number Owner & session name in [`config.js`](https://github.com/SkylarKaf/Elaina-MD/blob/master/config.js)
 
