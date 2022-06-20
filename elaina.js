@@ -609,7 +609,9 @@ argumen = `*Hai Kak ${pushname} 🤗*
 Ingin Sewa ${global.botnma} Untuk Grub Kamu? Bisa banget!!
 hargai terjangkau
 
-*cuma 5rb untuk 2 grub selama 30hari*
+*1 MINGGU:3K*
+*1 BULAN:4K*
+*PERMANEN:5K*
 
 Bot Di dukung dengan:
 Internet speed 1gbs, Hight server Ram Fast Respon dan 24jam aktifikasi! 
@@ -667,9 +669,9 @@ const template = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
    case 'donate': case 'donasi':{
 menu = `_Ah Yg Bener Luwh 🗿_
 
-• Dana ✓ : 6282331660134
-• Gopay ✓ : 6282331660134
-• Pulsa ✓ : 082331660134
+• Dana ✓ : https://telegra.ph/file/7bb7720b60df714011aeb.jpg
+• Gopay ✓:https://telegra.ph/file/0fbe56dfb5e4bbcb9d018.jpg
+• AllPay ✓ : https://telegra.ph/file/e0be45072e6510fbfb07d.jpg
 
 Makasih Buat yg bener-bener donate, kalo buat yg boong parah lu bg, Tukang PhP 😅👆`
 reply(menu)
